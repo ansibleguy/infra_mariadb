@@ -1,0 +1,16 @@
+# {{ ansible_managed }}
+
+[Unit]
+ConditionPathExists={{ CONFIG.config.path_config }}/server_%I.cnf
+ConditionPathExists=/etc/mysql/debian-start-instance.sh
+Documentation=https://github.com/ansibleguy/mariadb
+
+[Service]
+Environment='MYSQLD_MULTI_INSTANCE=--defaults-file={{ CONFIG.config.path_config }}/server_%I.cnf --defaults-group-suffix=.%I'
+ExecStartPost=
+ExecStartPost=/etc/mysql/debian-start-instance.sh %I
+
+{% for setting, value in settings.items() %}
+{{ setting }}{% if value != '' %}={{ value }}{% endif %}
+
+{% endfor %}

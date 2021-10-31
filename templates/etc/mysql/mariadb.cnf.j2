@@ -1,0 +1,6 @@
+# {{ ansible_managed }}
+[mysqld]
+{% for setting, value in mariadb_default_instance_settings.items() %}
+{{ setting }}{% if value != '' and value is not none %} = {{ value }}{% endif %}
+
+{% endfor %}

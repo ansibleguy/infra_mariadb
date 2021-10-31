@@ -1,0 +1,31 @@
+#!/bin/bash
+# {{ ansible_managed }}
+
+# This script is executed by "/etc/init.d/mysql" on every (re)start.
+# Modified for multi-instance use in the ansible-role 'https://github.com/ansibleguy/mariadb'
+
+CONFIG_FILE="{{ CONFIG.config.path_config }}/client_${1}_startup-checks.cnf"
+
+source /usr/share/mysql/debian-start.inc.sh
+
+if [ -f /etc/default/mysql ]; then
+  . /etc/default/mysql
+fi
+
+MYSQL="/usr/bin/mysql --defaults-file=${CONFIG_FILE}"
+MYADMIN="/usr/bin/mysqladmin --defaults-file=${CONFIG_FILE}"
+# Don't run full mysql_upgrade on every server restart, use --version-check to do it only once
+MYUPGRADE="/usr/bin/mysql_upgrade --defaults-extra-file=${CONFIG_FILE} --version-check"
+MYCHECK="/usr/bin/mysqlcheck --defaults-file=${CONFIG_FILE}"
+MYCHECK_SUBJECT="WARNING: mysqlcheck has found corrupt tables"
+MYCHECK_PARAMS="--all-databases --fast --silent"
+MYCHECK_RCPT="${MYCHECK_RCPT:-root}"
+
+trap "" SIGHUP
+(
+  upgrade_system_tables_if_necessary;
+  check_root_accounts;
+  check_for_crashed_tables;
+) >&2 &
+
+exit 0

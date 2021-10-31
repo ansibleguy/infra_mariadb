@@ -1,0 +1,47 @@
+---
+
+# we will not clean-up/remove the default-files in /var/lib/mysql since that might be problematic if the default-instance is actively used
+
+# without it the default mariadb instance will fail to start
+- name: MariaDB | Debian | Default-Instance | Copy default mysql start-script
+  ansible.builtin.copy:
+    src: 'files/etc/mysql/debian-start'
+    dest: '/etc/mysql/debian-start'
+    mode: 0755
+    owner: 'root'
+    group: 'root'
+
+- name: MariaDB | Debian | Default-Instance | Creating directories
+  ansible.builtin.file:
+    path: "{{ mariadb_default_instance_settings.datadir }}"
+    mode: 0755
+    owner: "{{ mariadb_default_instance_settings.user }}"
+    group: "{{ mariadb_default_instance_settings.group }}"
+    state: directory
+
+- name: MariaDB | Debian | Default-Instance | Checking if instance is initialized
+  ansible.builtin.stat:
+    path: "{{ mariadb_default_instance_settings.datadir }}/mysql"
+  register: mariadb_instance_initialized
+
+- name: MariaDB | Debian | Default-Instance | Initializing instance
+  ansible.builtin.shell: "mysql_install_db --user={{ mariadb_default_instance_settings.user }} --datadir={{ mariadb_default_instance_settings.datadir }}"
+  register: mariadb_default_instance_init
+  when: not mariadb_instance_initialized.stat.exists
+
+- name: MariaDB | Debian | Default-Instance | Configuring default mariadb-instance
+  ansible.builtin.template:
+    src: 'templates/etc/mysql/mariadb.cnf.j2'
+    dest: '/etc/mysql/mariadb.cnf'
+  register: mariadb_default_instance_config
+
+- name: MariaDB | Debian | Default-Instance | Restarting default-instance if needed
+  ansible.builtin.systemd:
+    daemon_reload: yes
+    name: 'mariadb.service'
+    enabled: yes
+    state: restarted
+  when: >
+    mariadb_default_instance_config.changed or
+    not mariadb_instance_initialized.stat.exists
+

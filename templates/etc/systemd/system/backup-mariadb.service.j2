@@ -1,0 +1,20 @@
+# {{ ansible_managed }}
+# NOTE:
+#   restore: xzcat /var/backups/mysql/{{ name }}_{DATETIME}.sql.xz | mysql
+
+[Unit]
+Description=Service to create a local backup of the mariadb instance {{ name }}
+Documentation=https://github.com/ansibleguy/mariadb
+Requires=mariadb@{{ name }}.service
+ConditionPathExists={{ CONFIG.config.path_config }}/client_{{ name }}_backup.cnf
+ConditionPathExists={{ path_backup }}
+ConditionPathExists={{ socket }}
+
+[Service]
+Type=simple
+User={{ instance.settings.user }}
+Group={{ instance.settings.group }}
+ExecStart=/usr/local/sbin/backup_mariadb_{{ name }}.sh
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=mariadb_backup_{{ name }}

@@ -1,0 +1,73 @@
+---
+
+- name: "MariaDB | Debian | Add Instance '{{ name }}' | Backup | Getting backup-user credentials"
+  ansible.builtin.set_fact:
+    backup_pwd: "{{ backup.creds.pwd | default('') | fallback(lookup('password', '/dev/null chars=ascii_letters,digits length=' + random_pwd_length)) }}"
+    backup_user: "{{ backup.creds.user | default('backup_' + name) }}"
+  tags: [instances, users, config, backup]
+
+- name: "MariaDB | Debian | Add Instance '{{ name }}' | Backup | Creating service-user"
+  community.mysql.mysql_user:
+    name: "{{ backup_user }}"
+    password: "{{ backup_pwd }}"
+    update_password: "{% if force_pwd_change %}always{% else %}on_create{% endif %}"  # changing the password always might bring problems with active-active replications
+    priv: "{{ mariadb_backup_privileges }}"
+    state: 'present'
+    login_unix_socket: "{{ socket }}"
+    login_user: "{{ instance.ansible_user }}"
+    login_password: "{{ instance | mgmt_pwd }}"
+  no_log: true
+  register: backup_user_update
+  when:
+    - not instance_read_only
+    - backup.creds.create | default(false)
+  tags: [instances, backup, users]
+
+- name: "MariaDB | Debian | Add Instance '{{ name }}' | Backup | Configuring backup credentials"
+  ansible.builtin.template:
+    src: 'templates/etc/mysql/instance.conf.d/client.cnf.j2'
+    dest: "{{ CONFIG.config.path_config }}/client_{{ name }}_backup.cnf"
+    owner: "{{ instance.settings.user }}"
+    group: "{{ instance.settings.group }}"
+    mode: 0400
+  no_log: true
+  vars:
+    user: "{{ backup_user }}"
+    pwd: "{{ backup_pwd }}"
+  when: >
+    (backup.creds.create | default(false) and backup_user_update.changed) or
+    (backup.creds.pwd is defined and backup.creds.pwd != '' and backup.creds.pwd is not none)
+  tags: [instances, users, backup, config]
+
+- name: "MariaDB | Debian | Add Instance '{{ name }}' | Backup | Checking for backup credential-file"
+  ansible.builtin.set_fact:
+    backup_defaults_file: "{{ backup.creds.defaults_file | default(CONFIG.config.path_config + '/client_' + name +  '_backup.cnf') }}"
+  when: >
+    backup.creds.create | default(false) or
+    (backup.creds.pwd is defined and backup.creds.pwd != '' and backup.creds.pwd is not none)
+    (backup.creds.defaults_file is defined and backup.creds.defaults_file != '' and backup.creds.defaults_file is not none)
+  tags: [instances, backup, config]
+
+- name: "MariaDB | Debian | Add Instance '{{ name }}' | Backup | Copying backup script"
+  ansible.builtin.template:
+    src: 'templates/usr/local/sbin/backup.sh.j2'
+    dest: "/usr/local/sbin/backup_mariadb_{{ name }}.sh"
+    mode: 0755
+  tags: [instances, backup, config]
+
+- name: "MariaDB | Debian | Add Instance '{{ name }}' | Backup | Configuring backup service"
+  ansible.builtin.template:
+    src: "templates/etc/systemd/system/backup-mariadb.{{ item }}.j2"
+    dest: "/etc/systemd/system/{{ backup.service_prefix }}backup-mariadb-{{ name }}.{{ item }}"
+  loop:
+    - 'service'
+    - 'timer'
+  tags: [instances, backup, config]
+
+- name: "MariaDB | Debian | Add Instance '{{ name }}' | Backup | Enabling/Starting backup timer"
+  ansible.builtin.systemd:
+    daemon_reload: yes
+    name: "{{ backup.service_prefix }}backup-mariadb-{{ name }}.timer"
+    enabled: yes
+    state: started
+  tags: [instances, backup]

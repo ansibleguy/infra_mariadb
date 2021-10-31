@@ -1,0 +1,11 @@
+# {{ ansible_managed }}
+[Unit]
+Description=Timer to create a local backup of the mariadb instance {{ name }}
+
+[Timer]
+OnCalendar={{ backup.time }}
+Persistent=false
+WakeSystem=false
+
+[Install]
+WantedBy=multi-user.target

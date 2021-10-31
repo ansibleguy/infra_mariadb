@@ -1,0 +1,58 @@
+---
+
+- name: "MariaDB | Debian | Remove Instance '{{ name }}' | Ask user"
+  ansible.builtin.pause:
+    prompt: "Do you really want to remove the database instance '{{ name }}' and all of its data? Do you want to try to dump its data before removing it => then type 'yes'!"
+  register: removal_prompt
+  when: not force_removal
+
+- name: "MariaDB | Debian | Remove Instance '{{ name }}' | Dumping database data before removing it (to '{{ path_backup }}/{{ name }}_{{ ansible_date_time.iso8601_basic_short }}_pre-removal.sql.xz')"
+  community.mysql.mysql_db:
+    state: 'dump'
+    name: all
+    target: "{{ path_backup }}/{{ name }}_{{ ansible_date_time.iso8601_basic_short }}_pre-removal.sql.xz"
+    login_unix_socket: "{{ socket }}"
+    login_user: "{{ instance.ansible_user }}"
+    login_password: "{{ instance | mgmt_pwd }}"
+  when:
+    - not force_removal
+    - removal_prompt.user_input == 'yes'
+  register: removal_dump
+  ignore_errors: true  # if the db service is already stopped..
+
+- name: "MariaDB | Debian | Remove Instance '{{ name }}' | Ask user if we should continue"
+  ansible.builtin.pause:
+    prompt: 'It seems that we are not able to dump the data of this instance! Do you still want to continue? (not recommended)'
+  when:
+    - not force_removal
+    - removal_dump is defined
+    - removal_dump.failed is defined
+    - removal_dump.failed
+
+- name: "MariaDB | Debian | Remove Instance '{{ name }}' | Removing/Disabling instance service"
+  ansible.builtin.systemd:
+    daemon_reload: yes
+    name: "mariadb@{{ name }}.service"
+    enabled: no
+    state: stopped
+
+- name: "MariaDB | Debian | Remove Instance '{{ name }}' | Removing/Disabling backup timer"
+  ansible.builtin.systemd:
+    daemon_reload: yes
+    name: "{{ backup.service_prefix }}backup-mariadb-{{ name }}.timer"
+    enabled: no
+    state: stopped
+
+# we'll leave the backup-path as-is
+- name: "MariaDB | Debian | Remove Instance '{{ name }}' | Removing files/directories"
+  ansible.builtin.file:
+    path: "{{ CONFIG.config.path_ssl }}/{{ name }}"
+    state: absent
+    force: yes
+  loop:
+    - "{{ path_data }}"
+    - "{{ CONFIG.config.path_config }}/server_{{ name }}.cnf"
+    - "{{ CONFIG.config.path_config }}/client_{{ name }}_startup-checks.cnf"
+    - "{{ CONFIG.config.path_config }}/client_{{ name }}_backup.cnf"
+    - "/etc/systemd/system/{{ backup.service_prefix }}backup-mariadb-{{ name }}.service"
+    - "/etc/systemd/system/{{ backup.service_prefix }}backup-mariadb-{{ name }}.timer"

@@ -1,0 +1,51 @@
+---
+
+# for schema upgrades and so on => multi-instance support for builtin '/etc/mysql/debian-start'
+
+- name: "MariaDB | Debian | Add Instance '{{ name }}' | Startup-Checks | Getting password for startup-check service-user"
+  ansible.builtin.set_fact:
+    startup_check_pwd: "{{ mariadb_startup_checks.pwd | fallback(lookup('password', '/dev/null chars=ascii_letters,digits length=' + random_pwd_length)) }}"
+  tags: [instances, users, config]
+
+- name: "MariaDB | Debian | Add Instance '{{ name }}' | Startup-Checks | Creating service-user"
+  community.mysql.mysql_user:
+    name: "{{ mariadb_startup_checks.user }}"
+    password: "{{ startup_check_pwd }}"
+    update_password: "{% if force_pwd_change %}always{% else %}on_create{% endif %}"  # changing the password always might bring problems with active-active replications
+    priv: '*.*:ALL'
+    state: 'present'
+    login_unix_socket: "{{ socket }}"
+    login_user: "{{ instance.ansible_user }}"
+    login_password: "{{ instance | mgmt_pwd }}"
+  no_log: true
+  register: startup_check_service_user
+  when:
+    - instance_read_only is defined
+    - not instance_read_only
+  tags: [instances, users]
+
+- name: "MariaDB | Debian | Add Instance '{{ name }}' | Startup-Checks  | Configuring client-config"
+  ansible.builtin.template:
+    src: 'templates/etc/mysql/instance.conf.d/client.cnf.j2'
+    dest: "{{ CONFIG.config.path_config }}/client_{{ name }}_startup-checks.cnf"
+    owner: "{{ instance.settings.user }}"
+    group: 'root'
+    mode: 0400
+  vars:
+    user: "{{ mariadb_startup_checks.user }}"
+    pwd: "{{ startup_check_pwd }}"
+  no_log: true
+  when:
+    - startup_check_service_user is defined
+    - startup_check_service_user.changed is defined
+    - startup_check_service_user.changed
+  tags: [instances, users, config]
+
+- name: "MariaDB | Debian | Add Instance '{{ name }}' | Startup-Checks  | Restarting instance service"
+  ansible.builtin.systemd:
+    name: "mariadb@{{ name }}.service"
+    state: restarted
+  when:
+    - startup_check_service_user is defined
+    - startup_check_service_user.changed is defined
+    - startup_check_service_user.changed

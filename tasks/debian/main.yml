@@ -1,0 +1,95 @@
+---
+
+- name: MariaDB | Debian | Install packages
+  ansible.builtin.apt:
+    name: "{{ base_packages.debian[ansible_distribution_major_version] | default(base_packages.debian.other) }}"
+    state: present
+  tags: [base]
+
+- name: MariaDB | Debian | Disabling swap
+  ansible.posix.sysctl:
+    name: vm.swappiness
+    value: '1'
+    state: present
+  when: configure_swappiness
+  tags: [config, base]
+
+- name: MariaDB | Debian | Configuring open file limit
+  ansible.posix.sysctl:
+    name: fs.nr_open
+    value: '1048576'
+    state: present
+  when: configure_ofl_increase
+  tags: [config, base]
+
+- name: MariaDB | Debian | Creating directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    mode: 0755
+  with_items:
+    - '/etc/systemd/system/mariadb@.service.d'
+    - "{{ CONFIG.config.path_run }}"
+    - "{{ CONFIG.config.path_data }}"
+    - "{{ CONFIG.config.path_config }}"
+    - "{{ CONFIG.config.path_base }}"
+  tags: [config, base]
+
+- name: MariaDB | Debian | Configuring default-instance
+  ansible.builtin.import_tasks: debian/default_instance.yml
+  tags: [config, base]
+
+# without it the custom mariadb instances will fail to start
+- name: MariaDB | Debian | Configuring startup-check script
+  ansible.builtin.template:
+    src: 'templates/etc/mysql/debian-start-instance.sh.j2'
+    dest: '/etc/mysql/debian-start-instance.sh'
+    mode: 0755
+    owner: 'root'
+    group: 'root'
+  tags: [config, base]
+
+- name: MariaDB | Debian | Configuring mysql instance-service settings
+  ansible.builtin.template:
+    src: 'templates/etc/systemd/system/mariadb@.service.d/override.conf.j2'
+    dest: '/etc/systemd/system/mariadb@.service.d/override.conf'
+  vars:
+    settings: "{{ CONFIG.service }}"
+  tags: [config, base]
+
+- name: MariaDB | Debian | Reloading systemd
+  ansible.builtin.systemd:
+    daemon_reload: yes
+  tags: [config, base]
+
+- name: MariaDB | Debian | Adding mariadb instances
+  ansible.builtin.include_tasks: debian/add_instance.yml
+  vars:
+    instance: "{{ default_instance_config | combine(instance_item.value) }}"
+    backup: "{{ CONFIG.backup | combine(instance_item.value.backup | default({}) ) }}"
+    name: "{{ instance_item.key | safe_key }}"
+    socket: "{{ CONFIG.config.path_run }}/mysqld_{{ name }}.sock"
+    path_data: "{{ CONFIG.config.path_data }}/instance_{{ name }}"
+    path_backup: "{{ backup.path }}/instance_{{ name }}"
+  when: instance_item.state | default('present') == 'present'
+  loop_control:
+    loop_var: instance_item
+  with_dict: "{{ CONFIG.instances }}"
+  no_log: true
+  tags: [instances, backup, config, users, dbs]
+
+- name: MariaDB | Debian | Removing mariadb instances
+  ansible.builtin.include_tasks: debian/rm_instance.yml
+  vars:
+    instance: "{{ default_instance_config | combine(instance_item.value) }}"
+    backup: "{{ CONFIG.backup | combine(instance_item.value.backup | default({}) ) }}"
+    name: "{{ instance_item.key | safe_key }}"
+    socket: "{{ CONFIG.config.path_run }}/mysqld_{{ name }}.sock"
+    path_data: "{{ CONFIG.config.path_data }}/instance_{{ name }}"
+    path_backup: "{{ backup.path }}/instance_{{ name }}"
+  when: instance_item.state | default('present') != 'present'
+  loop_control:
+    loop_var: instance_item
+  with_dict: "{{ CONFIG.instances }}"
+  no_log: true
+  tags: [instances, backup, config, users, dbs]

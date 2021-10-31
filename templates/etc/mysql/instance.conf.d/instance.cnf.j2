@@ -1,0 +1,23 @@
+# {{ ansible_managed }}
+[mysqld]
+datadir = {{ path_data }}
+basedir = {{ CONFIG.config.path_base }}
+pid-file = {{ CONFIG.config.path_run }}/mysqld_{{ name }}.pid
+socket = {{ socket }}
+lc_messages_dir = {{ CONFIG.config.path_lc }}
+
+{% if instance.ssl %}
+# ssl config
+ssl_ca = {{ CONFIG.config.path_ssl }}/{{ name }}/ca.pem
+ssl_cert = {{ CONFIG.config.path_ssl }}/{{ name }}/cert.pem
+ssl_key = {{ CONFIG.config.path_ssl }}/{{ name }}/key.pem
+{% endif %}
+
+# settings
+{% for setting, value in instance.settings.items() %}
+{%   if setting not in mariadb_settings_graylist %}
+{{ setting }}{% if value != '' and value is not none %} = {{ value }}{% endif %}
+
+{%   endif %}
+{% endfor %}
+

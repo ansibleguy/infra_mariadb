@@ -1,0 +1,14 @@
+#!/bin/bash
+# {{ ansible_managed }}
+
+BACKUP_PATH='{{ path_backup }}'
+KEY='{{ name }}'
+RETENTION={{ backup.retention_days }}
+
+BACKUP_FILE="${BACKUP_PATH}/${KEY}_$(date '+%Y_%m_%d_%H_%M_%S').sql.xz"
+MYSQL_CREDS='{% if backup_defaults_file is defined %}--defaults-file={{ backup_defaults_file }}{% elif backup.creds.login_path is not none %}--login-path={{ backup.creds.login_path }}{% endif %}'
+MYSQL_DBS='{% if backup.dbs | length > 0 %}--databases {% for db in backup.dbs %}{{ db }} {% endfor %}{% else %}--all-databases{% endif %}'
+
+mysqldump ${MYSQL_CREDS} ${MYSQL_DBS} | xz -{{ backup.compression_level }} -T{{ backup.compression_cores }} > ${BACKUP_FILE}
+find ${BACKUP_PATH} -name "${KEY}_*.sql.xz" -type f -mtime +${RETENTION}
+find ${BACKUP_PATH} -name "${KEY}_*.sql.xz" -type f -mtime +${RETENTION} -delete
