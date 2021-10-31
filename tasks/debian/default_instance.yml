@@ -44,4 +44,3 @@
   when: >
     mariadb_default_instance_config.changed or
     not mariadb_instance_initialized.stat.exists
-
