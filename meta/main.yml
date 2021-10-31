@@ -1,0 +1,13 @@
+---
+
+galaxy_info:
+  author: 'AnsibleGuy'
+  description: 'Role to deploy one or multiple MariaDB instances on a linux server'
+  platforms:
+    - name: Debian
+      versions:
+        - bullseye
+  galaxy_tags:
+    - 'mariadb'
+    - 'multi-instance'
+    - 'database'
