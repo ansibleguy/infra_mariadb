@@ -1,4 +1,4 @@
-# MariaDB Ansible Role
+# MariaDB Multi-Instance Ansible Role
 Ansible role to install one or multiple MariaDB instances on the target server.
 
 **Note:** this role currently only supports debian-based systems
@@ -38,17 +38,27 @@ Ansible role to install one or multiple MariaDB instances on the target server.
 * **WARNING:** This role expects that the default mariadb/mysql instance (_mysql.service/mariadb.service_) on the target system is not and will not be used!<br>
 It might **NOT BE ACCESSIBLE** after running this role!!
 
+
 * **WARNING:** If you are running your db servers in an active-active configuration you should **NEVER** run the role on both nodes at the same time!<br>
 Else the user-/db-creation tasks might break your sync!
 
+
 * **Note:** Most of this functionality can be opted in or out using the main defaults file and variables!
 
+
 * **Note:** We use the official community modules for [database](https://docs.ansible.com/ansible/latest/collections/community/mysql/mysql_db_module.html) and [user](https://docs.ansible.com/ansible/latest/collections/community/mysql/mysql_user_module.html#ansible-collections-community-mysql-mysql-user-module) configuration. [Replication support](https://docs.ansible.com/ansible/latest/collections/community/mysql/mysql_replication_module.html#ansible-collections-community-mysql-mysql-replication-module) might get added later on.
+
 
 * **Note:** Certificate management might be added later on to this role.<br>
 For now, you need to provide the certificates manually (_placed in /etc/mysql/ssl/{INSTANCE_KEY}/[ca|cert|key].pem_)
 
+
 * **Note:** You need to provide the [mysql-user](https://docs.ansible.com/ansible/latest/collections/community/mysql/mysql_user_module.html#ansible-collections-community-mysql-mysql-user-module) privileges EXACTLY as returned by a SHOW GRANT statement!
+
+
+* **Tip:** If you are mounting the datadir explicitly - you should set some mount options to optimize performance:
+  * noatime,nodiratime
+  * **Risky ones:** barrier=0,commit=60,data=writeback (_only use if you have a secure/fail-resistant storage_)
 
 ## Usage
 Run the playbook/role:
