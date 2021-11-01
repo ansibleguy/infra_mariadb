@@ -243,7 +243,7 @@ guy@ansible:~# cat /etc/systemd/system/mariadb@.service.d/override.conf
 > ConditionPathExists=/etc/mysql/instance.conf.d/server_%I.cnf
 > ConditionPathExists=/etc/mysql/debian-start-instance.sh
 > ConditionPathExists=/etc/mysql/instance.conf.d/client_%I_startup-checks.cnf
-> Documentation=https://github.com/ansibleguy/mariadb
+> Documentation=https://github.com/ansibleguy/infra_mariadb
 > 
 > [Service]
 > Environment='MYSQLD_MULTI_INSTANCE=--defaults-file=/etc/mysql/instance.conf.d/server_%I.cnf --defaults-group-suffix=.%I'
@@ -270,7 +270,7 @@ guy@ansible:~# systemctl status mariadb@guydb.service
 >      Active: active (running)
 >        Docs: man:mariadbd(8)
 >              https://mariadb.com/kb/en/library/systemd/
->              https://github.com/ansibleguy/mariadb
+>              https://github.com/ansibleguy/infra_mariadb
 >     Process: 134872 ExecStartPre=/usr/bin/mysql_install_db $MYSQLD_MULTI_INSTANCE (code=exited, status=0/SUCCESS)
 >     Process: 134910 ExecStartPost=/etc/mysql/debian-start-instance.sh guydb (code=exited, status=0/SUCCESS)
 >      Status: "Taking your SQL requests now..."

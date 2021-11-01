@@ -4,8 +4,8 @@ galaxy_info:
   author: 'AnsibleGuy <guy@ansibleguy.net>'
   readme: 'README.md'
   license: 'MIT'
-  repository: 'https://github.com/ansibleguy/mariadb'
-  issue_tracker_url: 'https://github.com/ansibleguy/mariadb/issues'
+  repository: 'https://github.com/ansibleguy/infra_mariadb'
+  issue_tracker_url: 'https://github.com/ansibleguy/infra_mariadb/issues'
   github_branch: 'stable'
   min_ansible_version: 2.9.0
   description: 'Role to deploy one or multiple MariaDB instances on a linux server'

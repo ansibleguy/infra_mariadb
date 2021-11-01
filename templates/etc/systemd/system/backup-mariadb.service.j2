@@ -4,7 +4,7 @@
 
 [Unit]
 Description=Service to create a local backup of the mariadb instance {{ name }}
-Documentation=https://github.com/ansibleguy/mariadb
+Documentation=https://github.com/ansibleguy/infra_mariadb
 Requires=mariadb@{{ name }}.service
 ConditionPathExists={{ CONFIG.config.path_config }}/client_{{ name }}_backup.cnf
 ConditionPathExists={{ path_backup }}
