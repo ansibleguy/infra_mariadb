@@ -17,3 +17,6 @@ galaxy_info:
     - 'mariadb'
     - 'sql'
     - 'database'
+
+collections:
+  'community.mysql'

@@ -61,10 +61,15 @@ For now, you need to provide the certificates manually (_placed in /etc/mysql/ss
   * noatime,nodiratime
   * **Risky ones:** barrier=0,commit=60,data=writeback (_only use if you have a secure/fail-resistant storage_)
 
+## Requirements
+
+* Community and posix collection: ```ansible-galaxy install -r requirements.yml```
+
+
 ## Usage
-Run the playbook/role:
+Run the playbook:
 ```bash
-ansible-playbook -K -D -i inventory/hosts.yml mariadb.yml --ask-vault-pass
+ansible-playbook -K -D -i inventory/hosts.yml playbook.yml --ask-vault-pass
 ```
 
 You need to define your instances by configuring the 'mariadb' dictionary!
