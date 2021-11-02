@@ -171,12 +171,12 @@
   tags: [instances, users]
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Configuring startup-checks"
-  ansible.builtin.include_tasks: debian/add_startup-checks.yml
+  ansible.builtin.include_tasks: add_startup-checks.yml
   no_log: true
   tags: [instances, config, users]
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Configuring backup"
-  ansible.builtin.include_tasks: debian/add_backup.yml
+  ansible.builtin.include_tasks: add_backup.yml
   no_log: true
   when: >
     configure_backup or

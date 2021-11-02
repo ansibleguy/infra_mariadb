@@ -92,7 +92,7 @@ default_instance_config:
     local-infile: 0
     open_files_limit: 1048576
 
-CONFIG: "{{ default_mariadb | combine(mariadb) }}"
+CONFIG: "{{ default_mariadb | combine(mariadb, recursive=true) }}"
 
 # mariadb default-instance lockdown settings => since I found no clean way to disable/remove the default instance
 mariadb_default_instance_settings:

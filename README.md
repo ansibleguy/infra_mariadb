@@ -1,8 +1,6 @@
 # MariaDB Multi-Instance Ansible Role
 Ansible role to install one or multiple MariaDB instances on the target server.
 
-**Note:** this role currently only supports debian-based systems
-
 **Tested:**
 * Debian 11
 
@@ -18,7 +16,7 @@ Ansible role to install one or multiple MariaDB instances on the target server.
   * Default opt-in:
     * Running secure-installation tasks
     * Swappiness lowered
-    * Oopen file limit increased (_sysctl, service, db_)
+    * Open file limit increased (_sysctl, service, db_)
   * Default opt-outs:
     * DB Backup Job
   * Default config:
@@ -33,7 +31,7 @@ Ansible role to install one or multiple MariaDB instances on the target server.
     * DB DNS-lookups disabled
     * _for more info check out the example below_
 
-## Infos
+## Info
 
 * **WARNING:** This role expects that the default mariadb/mysql instance (_mysql.service/mariadb.service_) on the target system is not and will not be used!<br>
 It might **NOT BE ACCESSIBLE** after running this role!!
@@ -41,6 +39,9 @@ It might **NOT BE ACCESSIBLE** after running this role!!
 
 * **WARNING:** If you are running your db servers in an active-active configuration you should **NEVER** run the role on both nodes at the same time!<br>
 Else the user-/db-creation tasks might break your sync!
+
+
+* **Note:** this role currently only supports debian-based systems
 
 
 * **Note:** Most of this functionality can be opted in or out using the main defaults file and variables!
@@ -143,7 +144,7 @@ There are also some useful **tags** available:
 
 You might want to use 'ansible-vault' to encrypt your passwords:
 ```bash
-ansible-vault encrypt_string 'SECRET_CONTENT_OF_VAR' --name NAME_OF_VAR
+ansible-vault encrypt_string
 ```
 
 ### Example

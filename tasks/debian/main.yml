@@ -36,7 +36,7 @@
   tags: [config, base]
 
 - name: MariaDB | Debian | Configuring default-instance
-  ansible.builtin.import_tasks: debian/default_instance.yml
+  ansible.builtin.import_tasks: default_instance.yml
   tags: [config, base]
 
 # without it the custom mariadb instances will fail to start
@@ -63,10 +63,10 @@
   tags: [config, base]
 
 - name: MariaDB | Debian | Adding mariadb instances
-  ansible.builtin.include_tasks: debian/add_instance.yml
+  ansible.builtin.include_tasks: add_instance.yml
   vars:
-    instance: "{{ default_instance_config | combine(instance_item.value) }}"
-    backup: "{{ CONFIG.backup | combine(instance_item.value.backup | default({}) ) }}"
+    instance: "{{ default_instance_config | combine(instance_item.value, recursive=true) }}"
+    backup: "{{ CONFIG.backup | combine(instance_item.value.backup | default({}), recursive=true) }}"
     name: "{{ instance_item.key | safe_key }}"
     socket: "{{ CONFIG.config.path_run }}/mysqld_{{ name }}.sock"
     path_data: "{{ CONFIG.config.path_data }}/instance_{{ name }}"
@@ -79,10 +79,10 @@
   tags: [instances, backup, config, users, dbs]
 
 - name: MariaDB | Debian | Removing mariadb instances
-  ansible.builtin.include_tasks: debian/rm_instance.yml
+  ansible.builtin.include_tasks: rm_instance.yml
   vars:
-    instance: "{{ default_instance_config | combine(instance_item.value) }}"
-    backup: "{{ CONFIG.backup | combine(instance_item.value.backup | default({}) ) }}"
+    instance: "{{ default_instance_config | combine(instance_item.value, recursive=true) }}"
+    backup: "{{ CONFIG.backup | combine(instance_item.value.backup | default({}), recursive=true) }}"
     name: "{{ instance_item.key | safe_key }}"
     socket: "{{ CONFIG.config.path_run }}/mysqld_{{ name }}.sock"
     path_data: "{{ CONFIG.config.path_data }}/instance_{{ name }}"
