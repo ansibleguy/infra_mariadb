@@ -41,6 +41,15 @@
     - startup_check_service_user.changed
   tags: [instances, users, config]
 
+- name: "MariaDB | Debian | Add Instance '{{ name }}' | Startup-Checks  | Ask user"
+  ansible.builtin.pause:
+    prompt: "The MariaDB instance '{{ name }}' must be restarted for the config-changes to be applied. Can we do this now? (yes/no)"
+  register: mariadb_restart_prompt
+  when:
+    - startup_check_service_user is defined
+    - startup_check_service_user.changed is defined
+    - startup_check_service_user.changed
+
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Startup-Checks  | Restarting instance service"
   ansible.builtin.systemd:
     name: "mariadb@{{ name }}.service"
@@ -49,3 +58,4 @@
     - startup_check_service_user is defined
     - startup_check_service_user.changed is defined
     - startup_check_service_user.changed
+    - mariadb_restart_prompt.user_input == 'yes'
