@@ -67,10 +67,8 @@ For now, you need to provide the certificates manually (_placed in /etc/mysql/ss
 
 
 ## Usage
-Run the playbook:
-```bash
-ansible-playbook -K -D -i inventory/hosts.yml playbook.yml --ask-vault-pass
-```
+
+### Config
 
 You need to define your instances by configuring the 'mariadb' dictionary!
 
@@ -138,6 +136,18 @@ mariadb:
 
 ```
 
+You might want to use 'ansible-vault' to encrypt your passwords:
+```bash
+ansible-vault encrypt_string
+```
+
+### Execution
+
+Run the playbook:
+```bash
+ansible-playbook -K -D -i inventory/hosts.yml playbook.yml --ask-vault-pass
+```
+
 There are also some useful **tags** available:
 * base => only configure basics; instances will not be touched
 * instances
@@ -145,12 +155,6 @@ There are also some useful **tags** available:
 * dbs
 * backup => instance backup-jobs
 * users
-
-
-You might want to use 'ansible-vault' to encrypt your passwords:
-```bash
-ansible-vault encrypt_string
-```
 
 ### Example
 
