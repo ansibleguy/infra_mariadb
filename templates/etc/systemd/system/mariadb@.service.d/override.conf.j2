@@ -1,12 +1,13 @@
 # {{ ansible_managed }}
+# ansibleguy.infra_mariadb
 
 [Unit]
-ConditionPathExists={{ CONFIG.config.path_config }}/server_%I.cnf
+ConditionPathExists={{ MARIADB_CONFIG.config.path_config }}/server_%I.cnf
 ConditionPathExists=/etc/mysql/debian-start-instance.sh
 Documentation=https://github.com/ansibleguy/infra_mariadb
 
 [Service]
-Environment='MYSQLD_MULTI_INSTANCE=--defaults-file={{ CONFIG.config.path_config }}/server_%I.cnf --defaults-group-suffix=.%I'
+Environment='MYSQLD_MULTI_INSTANCE=--defaults-file={{ MARIADB_CONFIG.config.path_config }}/server_%I.cnf --defaults-group-suffix=.%I'
 ExecStartPost=
 ExecStartPost=/etc/mysql/debian-start-instance.sh %I
 

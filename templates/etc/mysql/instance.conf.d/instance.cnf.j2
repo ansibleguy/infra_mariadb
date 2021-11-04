@@ -1,16 +1,19 @@
 # {{ ansible_managed }}
+# ansibleguy.infra_mariadb
+
 [mysqld]
 datadir = {{ path_data }}
-basedir = {{ CONFIG.config.path_base }}
-pid-file = {{ CONFIG.config.path_run }}/mysqld_{{ name }}.pid
+basedir = {{ MARIADB_CONFIG.config.path_base }}
+pid-file = {{ MARIADB_CONFIG.config.path_run }}/mysqld_{{ name }}.pid
 socket = {{ socket }}
-lc_messages_dir = {{ CONFIG.config.path_lc }}
+lc_messages_dir = {{ MARIADB_CONFIG.config.path_lc }}
+port = {{ mariadb_port }}
 
 {% if instance.ssl %}
 # ssl config
-ssl_ca = {{ CONFIG.config.path_ssl }}/{{ name }}/ca.pem
-ssl_cert = {{ CONFIG.config.path_ssl }}/{{ name }}/cert.pem
-ssl_key = {{ CONFIG.config.path_ssl }}/{{ name }}/key.pem
+ssl_ca = {{ MARIADB_CONFIG.config.path_ssl }}/{{ name }}/ca.pem
+ssl_cert = {{ MARIADB_CONFIG.config.path_ssl }}/{{ name }}/cert.pem
+ssl_key = {{ MARIADB_CONFIG.config.path_ssl }}/{{ name }}/key.pem
 {% endif %}
 
 # settings

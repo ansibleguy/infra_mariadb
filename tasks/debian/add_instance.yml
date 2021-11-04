@@ -3,9 +3,65 @@
 # if the initialization fails: you might need to manually remove the datadir else the initialization will not work!
 #   rm -rf /var/lib/mysql/instance_{KEY} => would be the default for that action
 
+- name: Checking if config exists
+  ansible.builtin.stat:
+    path: "{{ MARIADB_CONFIG.config.path_config }}/server_{{ name }}.cnf"
+  register: mariadb_config_raw
+
+- name: Getting configured port
+  ansible.builtin.shell: "cat {{ MARIADB_CONFIG.config.path_config }}/server_{{ name }}.cnf | grep port | cut -d '=' -f2 | xargs"
+  register: mariadb_port_existing_raw
+  changed_when: false
+  check_mode: false
+  when: mariadb_config_raw.stat.exists
+
+- name: "MariaDB | Debian | Add Instance '{{ name }}' | Setting free port as exists"
+  ansible.builtin.set_fact:
+    mariadb_port: "{{ mariadb_port_existing_raw.stdout }}"
+  when:
+    - mariadb_config_raw.stat.exists
+    - mariadb_port_existing_raw is defined
+    - mariadb_port_existing_raw.stdout is defined
+  tags: [instances, config]
+
+- name: "MariaDB | Debian | Add Instance '{{ name }}' | Checking if configured port is free"
+  ansible.builtin.command: "/usr/bin/python3 /etc/mysql/check_port.py {{ MARIADB_CONFIG.config.path_config }} {{ instance.settings.port }}"
+  register: mariadb_port_free_raw
+  changed_when: false
+  check_mode: false
+  when:
+    - not mariadb_config_raw.stat.exists
+    - instance.settings.port | default(none, true) is not none
+  tags: [instances, config]
+
+- name: "MariaDB | Debian | Add Instance '{{ name }}' | Getting free port"
+  ansible.builtin.command: "/usr/bin/python3 /etc/mysql/check_port.py {{ MARIADB_CONFIG.config.path_config }}"
+  register: mariadb_port_raw
+  changed_when: false
+  check_mode: false
+  when: >
+    not mariadb_config_raw.stat.exists and
+    (instance.settings.port | default(none, true) is none or
+    (mariadb_port_free_raw is defined and mariadb_port_free_raw.stdout == '1'))
+  tags: [instances, config]
+
+- name: "MariaDB | Debian | Add Instance '{{ name }}' | Setting free port"
+  ansible.builtin.set_fact:
+    mariadb_port: "{{ mariadb_port_raw.stdout }}"
+  when:
+    - not mariadb_config_raw.stat.exists
+    - mariadb_port_raw is defined
+    - mariadb_port_raw.stdout is defined
+  tags: [instances, config]
+
+- name: "MariaDB | Debian | Add Instance '{{ name }}' | Setting port as configured"
+  ansible.builtin.set_fact:
+    mariadb_port: "{{ mariadb_port_raw.stdout }}"
+  when: mariadb_port is undefined
+
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Creating ssl directory"
   ansible.builtin.file:
-    path: "{{ CONFIG.config.path_ssl }}/{{ name }}"
+    path: "{{ MARIADB_CONFIG.config.path_ssl }}/{{ name }}"
     owner: "{{ instance.settings.user }}"
     group: "{{ instance.settings.group }}"
     state: directory
@@ -29,7 +85,7 @@
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Configuring mariadb instance"
   ansible.builtin.template:
     src: 'templates/etc/mysql/instance.conf.d/instance.cnf.j2'
-    dest: "{{ CONFIG.config.path_config }}/server_{{ name }}.cnf"
+    dest: "{{ MARIADB_CONFIG.config.path_config }}/server_{{ name }}.cnf"
   no_log: true
   tags: [instances, config]
 
@@ -106,8 +162,7 @@
   ignore_errors: true
   register: root_pwd_update
   when:
-    - instance.root_pwd != ''
-    - instance.root_pwd is not none
+    - instance.root_pwd | default(none, true) is not none
     - not instance_read_only
   tags: [instances, users]
 
@@ -122,8 +177,7 @@
   no_log: true
   register: root_pwd_update_wopwd
   when:
-    - instance.root_pwd != ''
-    - instance.root_pwd is not none
+    - instance.root_pwd | default(none, true) is not none
     - not instance_read_only
     - root_pwd_update.failed is defined
     - root_pwd_update.failed  # could be that the authentication failed since the ansible-user is not yet configured as expected
@@ -166,6 +220,7 @@
   when:
     - instance.users | length > 0
     - not instance_read_only
+    - item.key | default(none, true) is not none
   with_dict: "{{ instance.users }}"
   no_log: true
   tags: [instances, users]

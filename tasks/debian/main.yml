@@ -29,11 +29,19 @@
     mode: 0755
   with_items:
     - '/etc/systemd/system/mariadb@.service.d'
-    - "{{ CONFIG.config.path_run }}"
-    - "{{ CONFIG.config.path_data }}"
-    - "{{ CONFIG.config.path_config }}"
-    - "{{ CONFIG.config.path_base }}"
+    - "{{ MARIADB_CONFIG.config.path_run }}"
+    - "{{ MARIADB_CONFIG.config.path_data }}"
+    - "{{ MARIADB_CONFIG.config.path_config }}"
+    - "{{ MARIADB_CONFIG.config.path_base }}"
   tags: [config, base]
+
+- name: MariaDB | Debian | Copying port-checker script
+  ansible.builtin.copy:
+    src: 'files/etc/mysql/check_port.py'
+    dest: '/etc/mysql/check_port.py'
+    mode: 0755
+    owner: 'root'
+    group: 'root'
 
 - name: MariaDB | Debian | Configuring default-instance
   ansible.builtin.import_tasks: default_instance.yml
@@ -54,7 +62,7 @@
     src: 'templates/etc/systemd/system/mariadb@.service.d/override.conf.j2'
     dest: '/etc/systemd/system/mariadb@.service.d/override.conf'
   vars:
-    settings: "{{ CONFIG.service }}"
+    settings: "{{ MARIADB_CONFIG.service }}"
   tags: [config, base]
 
 - name: MariaDB | Debian | Reloading systemd
@@ -66,15 +74,15 @@
   ansible.builtin.include_tasks: add_instance.yml
   vars:
     instance: "{{ default_instance_config | combine(instance_item.value, recursive=true) }}"
-    backup: "{{ CONFIG.backup | combine(instance_item.value.backup | default({}), recursive=true) }}"
+    backup: "{{ MARIADB_CONFIG.backup | combine(instance_item.value.backup | default({}), recursive=true) }}"
     name: "{{ instance_item.key | safe_key }}"
-    socket: "{{ CONFIG.config.path_run }}/mysqld_{{ name }}.sock"
-    path_data: "{{ CONFIG.config.path_data }}/instance_{{ name }}"
+    socket: "{{ MARIADB_CONFIG.config.path_run }}/mysqld_{{ name }}.sock"
+    path_data: "{{ MARIADB_CONFIG.config.path_data }}/instance_{{ name }}"
     path_backup: "{{ backup.path }}/instance_{{ name }}"
   when: instance_item.state | default('present') == 'present'
   loop_control:
     loop_var: instance_item
-  with_dict: "{{ CONFIG.instances }}"
+  with_dict: "{{ MARIADB_CONFIG.instances }}"
   no_log: true
   tags: [instances, backup, config, users, dbs]
 
@@ -82,14 +90,14 @@
   ansible.builtin.include_tasks: rm_instance.yml
   vars:
     instance: "{{ default_instance_config | combine(instance_item.value, recursive=true) }}"
-    backup: "{{ CONFIG.backup | combine(instance_item.value.backup | default({}), recursive=true) }}"
+    backup: "{{ MARIADB_CONFIG.backup | combine(instance_item.value.backup | default({}), recursive=true) }}"
     name: "{{ instance_item.key | safe_key }}"
-    socket: "{{ CONFIG.config.path_run }}/mysqld_{{ name }}.sock"
-    path_data: "{{ CONFIG.config.path_data }}/instance_{{ name }}"
+    socket: "{{ MARIADB_CONFIG.config.path_run }}/mysqld_{{ name }}.sock"
+    path_data: "{{ MARIADB_CONFIG.config.path_data }}/instance_{{ name }}"
     path_backup: "{{ backup.path }}/instance_{{ name }}"
   when: instance_item.state | default('present') != 'present'
   loop_control:
     loop_var: instance_item
-  with_dict: "{{ CONFIG.instances }}"
+  with_dict: "{{ MARIADB_CONFIG.instances }}"
   no_log: true
   tags: [instances, backup, config, users, dbs]

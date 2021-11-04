@@ -54,7 +54,6 @@ default_mariadb:
 # instance-specific config
 default_instance_config:
   ssl: false
-  backup: true
   ansible_user: 'root'
   ansible_pwd:
   root_pwd: ''
@@ -64,6 +63,10 @@ default_instance_config:
   #   ${path_ssl}/${INSTANCE_KEY}/key.pem
   dbs: { }
   users: { }
+
+  backup:
+    enabled: false
+
   settings:
     # these settings are just some defaults for small databases
     # i'm no DBA => therefore these might not be optimal
@@ -71,7 +74,7 @@ default_instance_config:
     user: 'mysql'
     group: 'mysql'
     bind_address: '127.0.0.1'
-    port: 3306
+    port:  # if no port is provided the role will get a free one to use; it will be persistent after the initial configuration
     log_warnings: 2  # log verbosity => see: https://mariadb.com/kb/en/error-log/
     character-set-server: 'utf8mb4'
     collation-server: 'utf8mb4_general_ci'
@@ -92,14 +95,14 @@ default_instance_config:
     local-infile: 0
     open_files_limit: 1048576
 
-CONFIG: "{{ default_mariadb | combine(mariadb, recursive=true) }}"
+MARIADB_CONFIG: "{{ default_mariadb | combine(mariadb, recursive=true) }}"
 
 # mariadb default-instance lockdown settings => since I found no clean way to disable/remove the default instance
 mariadb_default_instance_settings:
-  datadir: "{{ CONFIG.config.path_data }}/default"
-  basedir: "{{ CONFIG.config.path_base }}"
-  socket: "{{ CONFIG.config.path_run }}/mysqld_default.sock"
-  pid-file: "{{ CONFIG.config.path_run }}/mysqld_default.pid"
+  datadir: "{{ MARIADB_CONFIG.config.path_data }}/default"
+  basedir: "{{ MARIADB_CONFIG.config.path_base }}"
+  socket: "{{ MARIADB_CONFIG.config.path_run }}/mysqld_default.sock"
+  pid-file: "{{ MARIADB_CONFIG.config.path_run }}/mysqld_default.pid"
   user: 'mysql'
   group: 'mysql'
   bind_address: '127.0.0.1'
@@ -129,6 +132,6 @@ base_packages:
     other: ['mariadb-client', 'mariadb-server', 'python3-pymysql']
 
 # these settings are configured 'manually' in the jinja template and cannot be set when provided in 'settins'
-mariadb_settings_graylist: ['ssl_ca', 'ssl_cert', 'ssl_key', 'datadir', 'basedir', 'socket', 'pid-file']
+mariadb_settings_graylist: ['ssl_ca', 'ssl_cert', 'ssl_key', 'datadir', 'basedir', 'socket', 'pid-file', 'port']
 random_pwd_length: '50'  # must be string-type
 mariadb_backup_privileges: '*.*:SELECT,RELOAD,PROCESS,LOCK TABLES,BINLOG MONITOR,SHOW VIEW,EVENT,TRIGGER'

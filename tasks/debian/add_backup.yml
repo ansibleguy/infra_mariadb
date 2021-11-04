@@ -26,7 +26,7 @@
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Backup | Configuring backup credentials"
   ansible.builtin.template:
     src: 'templates/etc/mysql/instance.conf.d/client.cnf.j2'
-    dest: "{{ CONFIG.config.path_config }}/client_{{ name }}_backup.cnf"
+    dest: "{{ MARIADB_CONFIG.config.path_config }}/client_{{ name }}_backup.cnf"
     owner: "{{ instance.settings.user }}"
     group: "{{ instance.settings.group }}"
     mode: 0400
@@ -41,10 +41,10 @@
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Backup | Checking for backup credential-file"
   ansible.builtin.set_fact:
-    backup_defaults_file: "{{ backup.creds.defaults_file | default(CONFIG.config.path_config + '/client_' + name +  '_backup.cnf') }}"
+    backup_defaults_file: "{{ backup.creds.defaults_file | default(MARIADB_CONFIG.config.path_config + '/client_' + name +  '_backup.cnf') }}"
   when: >
     backup.creds.create | default(false) or
-    (backup.creds.pwd is defined and backup.creds.pwd != '' and backup.creds.pwd is not none)
+    (backup.creds.pwd is defined and backup.creds.pwd != '' and backup.creds.pwd is not none) or
     (backup.creds.defaults_file is defined and backup.creds.defaults_file != '' and backup.creds.defaults_file is not none)
   tags: [instances, backup, config]
 
@@ -58,7 +58,7 @@
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Backup | Configuring backup service"
   ansible.builtin.template:
     src: "templates/etc/systemd/system/backup-mariadb.{{ item }}.j2"
-    dest: "/etc/systemd/system/{{ backup.service_prefix }}backup-mariadb-{{ name }}.{{ item }}"
+    dest: "/etc/systemd/system/ansibleguy.infra_mariadb-backup-{{ name }}.{{ item }}"
   loop:
     - 'service'
     - 'timer'
@@ -67,7 +67,7 @@
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Backup | Enabling/Starting backup timer"
   ansible.builtin.systemd:
     daemon_reload: yes
-    name: "{{ backup.service_prefix }}backup-mariadb-{{ name }}.timer"
+    name: "ansibleguy.infra_mariadb-backup-{{ name }}.timer"
     enabled: yes
     state: started
   tags: [instances, backup]

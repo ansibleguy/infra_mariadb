@@ -46,13 +46,13 @@
 # we'll leave the backup-path as-is
 - name: "MariaDB | Debian | Remove Instance '{{ name }}' | Removing files/directories"
   ansible.builtin.file:
-    path: "{{ CONFIG.config.path_ssl }}/{{ name }}"
+    path: "{{ MARIADB_CONFIG.config.path_ssl }}/{{ name }}"
     state: absent
     force: yes
   loop:
     - "{{ path_data }}"
-    - "{{ CONFIG.config.path_config }}/server_{{ name }}.cnf"
-    - "{{ CONFIG.config.path_config }}/client_{{ name }}_startup-checks.cnf"
-    - "{{ CONFIG.config.path_config }}/client_{{ name }}_backup.cnf"
+    - "{{ MARIADB_CONFIG.config.path_config }}/server_{{ name }}.cnf"
+    - "{{ MARIADB_CONFIG.config.path_config }}/client_{{ name }}_startup-checks.cnf"
+    - "{{ MARIADB_CONFIG.config.path_config }}/client_{{ name }}_backup.cnf"
     - "/etc/systemd/system/{{ backup.service_prefix }}backup-mariadb-{{ name }}.service"
     - "/etc/systemd/system/{{ backup.service_prefix }}backup-mariadb-{{ name }}.timer"

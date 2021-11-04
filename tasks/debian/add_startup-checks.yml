@@ -27,7 +27,7 @@
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Startup-Checks  | Configuring client-config"
   ansible.builtin.template:
     src: 'templates/etc/mysql/instance.conf.d/client.cnf.j2'
-    dest: "{{ CONFIG.config.path_config }}/client_{{ name }}_startup-checks.cnf"
+    dest: "{{ MARIADB_CONFIG.config.path_config }}/client_{{ name }}_startup-checks.cnf"
     owner: "{{ instance.settings.user }}"
     group: 'root'
     mode: 0400
