@@ -88,7 +88,7 @@
 
 - name: MariaDB | Debian | Removing mariadb instances
   ansible.builtin.include_tasks: rm_instance.yml
-  when: instance.state == 'present'
+  when: instance.state != 'present'
   vars:
     instance: "{{ default_instance_config | combine(instance_item.value, recursive=true) }}"
     backup: "{{ MARIADB_CONFIG.backup | combine(instance_item.value.backup | default({}, true), recursive=true) }}"
