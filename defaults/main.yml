@@ -47,16 +47,17 @@ default_mariadb:
     retention_days: 30
     creds:
       user: 'root'
-      pwd: ''
+      pwd:
       defaults_file:
       login_path:
 
 # instance-specific config
 default_instance_config:
   ssl: false
+  state: 'present'
   ansible_user: 'root'
   ansible_pwd:
-  root_pwd: ''
+  root_pwd:
   # if enabled you must place the following certificates in the following directory:
   #   ${path_ssl}/${INSTANCE_KEY}/ca.pem
   #   ${path_ssl}/${INSTANCE_KEY}/cert.pem

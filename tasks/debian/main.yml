@@ -2,7 +2,7 @@
 
 - name: MariaDB | Debian | Install packages
   ansible.builtin.apt:
-    name: "{{ base_packages.debian[ansible_distribution_major_version] | default(base_packages.debian.other) }}"
+    name: "{{ base_packages.debian[ansible_distribution_major_version] | default(base_packages.debian.other, true) }}"
     state: present
   tags: [base]
 
@@ -72,14 +72,14 @@
 
 - name: MariaDB | Debian | Adding mariadb instances
   ansible.builtin.include_tasks: add_instance.yml
+  when: instance.state == 'present'
   vars:
     instance: "{{ default_instance_config | combine(instance_item.value, recursive=true) }}"
-    backup: "{{ MARIADB_CONFIG.backup | combine(instance_item.value.backup | default({}), recursive=true) }}"
+    backup: "{{ MARIADB_CONFIG.backup | combine(instance_item.value.backup | default({}, true), recursive=true) }}"
     name: "{{ instance_item.key | safe_key }}"
     socket: "{{ MARIADB_CONFIG.config.path_run }}/mysqld_{{ name }}.sock"
     path_data: "{{ MARIADB_CONFIG.config.path_data }}/instance_{{ name }}"
     path_backup: "{{ backup.path }}/instance_{{ name }}"
-  when: instance_item.state | default('present') == 'present'
   loop_control:
     loop_var: instance_item
   with_dict: "{{ MARIADB_CONFIG.instances }}"
@@ -88,14 +88,14 @@
 
 - name: MariaDB | Debian | Removing mariadb instances
   ansible.builtin.include_tasks: rm_instance.yml
+  when: instance.state == 'present'
   vars:
     instance: "{{ default_instance_config | combine(instance_item.value, recursive=true) }}"
-    backup: "{{ MARIADB_CONFIG.backup | combine(instance_item.value.backup | default({}), recursive=true) }}"
+    backup: "{{ MARIADB_CONFIG.backup | combine(instance_item.value.backup | default({}, true), recursive=true) }}"
     name: "{{ instance_item.key | safe_key }}"
     socket: "{{ MARIADB_CONFIG.config.path_run }}/mysqld_{{ name }}.sock"
     path_data: "{{ MARIADB_CONFIG.config.path_data }}/instance_{{ name }}"
     path_backup: "{{ backup.path }}/instance_{{ name }}"
-  when: instance_item.state | default('present') != 'present'
   loop_control:
     loop_var: instance_item
   with_dict: "{{ MARIADB_CONFIG.instances }}"

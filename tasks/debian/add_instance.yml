@@ -114,23 +114,23 @@
     login_unix_socket: "{{ socket }}"
     login_user: "{{ instance.ansible_user }}"
     login_password: "{{ instance | mgmt_pwd }}"
-  register: instance_read_only_raw
+  register: mariadb_instance_ro_raw
   when: mariadb_instance_initialized.stat.exists
   tags: [instances, users, dbs]
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Setting r/o state"
   ansible.builtin.set_fact:
-    instance_read_only: "{{ instance_read_only_raw['query_result'][0][0]['@@global.read_only'] | bool }}"
-    ro_instance: "{{ name }}"
+    mariadb_instance_ro: "{{ mariadb_instance_ro_raw['query_result'][0][0]['@@global.read_only'] | bool }}"
+    mariadb_instance_ro_name: "{{ name }}"
   when: mariadb_instance_initialized.stat.exists
   tags: [instances, users, dbs]
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Setting r/o default"
   ansible.builtin.set_fact:
-    instance_read_only: false
+    mariadb_instance_ro: false
   when: >
-    instance_read_only is undefined or
-    ro_instance != name
+    mariadb_instance_ro is undefined or
+    mariadb_instance_ro_name != name
   tags: [instances, users, dbs]
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Running secure-installation tasks"
@@ -163,7 +163,7 @@
   register: root_pwd_update
   when:
     - instance.root_pwd | default(none, true) is not none
-    - not instance_read_only
+    - not mariadb_instance_ro
   tags: [instances, users]
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Setting root password (if provided) [without pwd]"
@@ -178,7 +178,7 @@
   register: root_pwd_update_wopwd
   when:
     - instance.root_pwd | default(none, true) is not none
-    - not instance_read_only
+    - not mariadb_instance_ro
     - root_pwd_update.failed is defined
     - root_pwd_update.failed  # could be that the authentication failed since the ansible-user is not yet configured as expected
   tags: [instances, users]
@@ -204,14 +204,14 @@
   no_log: true
   when:
     - instance.dbs | length > 0
-    - not instance_read_only
+    - not mariadb_instance_ro
   tags: [instances, dbs]
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Managing users"
   community.mysql.mysql_user:
     name: "{{ item.key }}"
     password: "{{ item.value.pwd }}"
-    update_password: "{% if force_pwd_change %}always{% else %}{{ item.value.update_pwd | default('on_create') }}{% endif %}"
+    update_password: "{% if force_pwd_change %}always{% else %}{{ item.value.update_pwd | default('on_create', true) }}{% endif %}"
     priv: "{{ item.value.priv | default('') }}"
     state: "{% if item.value.state | default('') in ['present', 'absent'] %}{{ item.value.state }}{% else %}present{% endif %}"
     login_unix_socket: "{{ socket }}"
@@ -219,7 +219,7 @@
     login_password: "{{ instance | mgmt_pwd }}"
   when:
     - instance.users | length > 0
-    - not instance_read_only
+    - not mariadb_instance_ro
     - item.key | default(none, true) is not none
   with_dict: "{{ instance.users }}"
   no_log: true

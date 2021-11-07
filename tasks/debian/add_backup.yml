@@ -3,7 +3,7 @@
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Backup | Getting backup-user credentials"
   ansible.builtin.set_fact:
     backup_pwd: "{{ backup.creds.pwd | default('') | fallback(lookup('password', '/dev/null chars=ascii_letters,digits length=' + random_pwd_length)) }}"
-    backup_user: "{{ backup.creds.user | default('backup_' + name) }}"
+    backup_user: "{{ backup.creds.user | default('backup_' + name, true) }}"
   tags: [instances, users, config, backup]
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Backup | Creating service-user"
@@ -19,8 +19,8 @@
   no_log: true
   register: backup_user_update
   when:
-    - not instance_read_only
-    - backup.creds.create | default(false)
+    - not mariadb_instance_ro
+    - backup.creds.create | default(false, true)
   tags: [instances, backup, users]
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Backup | Configuring backup credentials"
@@ -35,17 +35,17 @@
     user: "{{ backup_user }}"
     pwd: "{{ backup_pwd }}"
   when: >
-    (backup.creds.create | default(false) and backup_user_update.changed) or
-    (backup.creds.pwd is defined and backup.creds.pwd != '' and backup.creds.pwd is not none)
+    (backup.creds.create | default(false, true) and backup_user_update.changed) or
+    (backup.creds.pwd is defined and backup.creds.pwd | default(none, true) is not none)
   tags: [instances, users, backup, config]
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Backup | Checking for backup credential-file"
   ansible.builtin.set_fact:
-    backup_defaults_file: "{{ backup.creds.defaults_file | default(MARIADB_CONFIG.config.path_config + '/client_' + name +  '_backup.cnf') }}"
+    backup_defaults_file: "{{ backup.creds.defaults_file | default(MARIADB_CONFIG.config.path_config + '/client_' + name +  '_backup.cnf', true) }}"
   when: >
-    backup.creds.create | default(false) or
-    (backup.creds.pwd is defined and backup.creds.pwd != '' and backup.creds.pwd is not none) or
-    (backup.creds.defaults_file is defined and backup.creds.defaults_file != '' and backup.creds.defaults_file is not none)
+    backup.creds.create | default(false, true) or
+    (backup.creds.pwd is defined and backup.creds.pwd | default(none, true) is not none) or
+    (backup.creds.defaults_file is defined and backup.creds.defaults_file | default(none, true) is not none)
   tags: [instances, backup, config]
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Backup | Copying backup script"

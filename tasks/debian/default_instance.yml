@@ -39,6 +39,10 @@
   ansible.builtin.pause:
     prompt: "The MariaDB default-instance must be restarted for the config-changes to be applied. Can we do this now? (yes/no)"
   register: mariadb_restart_prompt
+  when: >
+    mariadb_default_instance_config.changed or
+    not mariadb_instance_initialized.stat.exists and
+    mariadb_restart_prompt.user_input == 'yes'
 
 - name: MariaDB | Debian | Default-Instance | Restarting if needed
   ansible.builtin.systemd:

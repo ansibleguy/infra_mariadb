@@ -20,8 +20,8 @@
   no_log: true
   register: startup_check_service_user
   when:
-    - instance_read_only is defined
-    - not instance_read_only
+    - mariadb_instance_ro is defined
+    - not mariadb_instance_ro
   tags: [instances, users]
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Startup-Checks  | Configuring client-config"
