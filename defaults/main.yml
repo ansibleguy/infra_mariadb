@@ -81,7 +81,7 @@ default_instance_config:
     collation-server: 'utf8mb4_general_ci'
     innodb_file_per_table: 1
     innodb_buffer_pool_size: 512M
-    innodb_log_file_size: 1GB
+    innodb_log_file_size: 256M  # equal to one hour’s worth of log entries during peak load => see: https://mariadb.com/resources/blog/10-database-tuning-tips-for-peak-workloads/
     max_allowed_packet: 512M
     max_connections: 500
     skip-name-resolve:
