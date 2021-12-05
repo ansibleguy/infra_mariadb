@@ -89,8 +89,11 @@ mariadb:
 
       dbs:
         api:
+          encoding: 'utf8mb4'
+
         templates:
-        deprecated: 'absent'
+        deprecated:
+          state: 'absent'
       
       users:
         app:
