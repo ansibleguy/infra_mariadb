@@ -1,5 +1,5 @@
 # MariaDB Multi-Instance Ansible Role
-Ansible role to install one or multiple MariaDB instances on the target server.
+Ansible Role to deploy one or multiple MariaDB instances on a linux server.
 
 **Tested:**
 * Debian 11

@@ -14,6 +14,7 @@
     login_unix_socket: "{{ socket }}"
     login_user: "{{ instance.ansible_user }}"
     login_password: "{{ instance | mgmt_pwd }}"
+    use_shell: true
   when:
     - not force_removal
     - removal_prompt.user_input == 'yes'
