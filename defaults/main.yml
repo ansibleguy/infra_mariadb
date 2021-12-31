@@ -136,3 +136,4 @@ base_packages:
 mariadb_settings_graylist: ['ssl_ca', 'ssl_cert', 'ssl_key', 'datadir', 'basedir', 'socket', 'pid-file', 'port']
 random_pwd_length: '50'  # must be string-type
 mariadb_backup_privileges: '*.*:SELECT,RELOAD,PROCESS,LOCK TABLES,BINLOG MONITOR,SHOW VIEW,EVENT,TRIGGER'
+tmp_pwd_file_prefix: '/tmp/.ansibleguy.infra_mariadb_'

@@ -4,7 +4,7 @@
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Startup-Checks | Getting password for startup-check service-user"
   ansible.builtin.set_fact:
-    startup_check_pwd: "{{ mariadb_startup_checks.pwd | fallback(lookup('password', '/dev/null chars=ascii_letters,digits length=' + random_pwd_length)) }}"
+    startup_check_pwd: "{{ mariadb_startup_checks.pwd | fallback(lookup('password', tmp_pwd_file_prefix + name + '_mdbsvc chars=ascii_letters,digits length=' + random_pwd_length)) }}"
   tags: [instances, users, config]
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Startup-Checks | Creating service-user"
@@ -40,6 +40,11 @@
     - startup_check_service_user.changed is defined
     - startup_check_service_user.changed
   tags: [instances, users, config]
+
+- name: "MariaDB | Debian | Add Instance '{{ name }}' | Startup-Checks  | Cleaning up temporary password file"
+  ansible.builtin.file:
+    path: "{{ tmp_pwd_file_prefix }}{{ name }}_mdbsvc"
+    state: absent
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Startup-Checks  | Ask user"
   ansible.builtin.pause:
