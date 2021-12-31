@@ -137,3 +137,4 @@ mariadb_settings_graylist: ['ssl_ca', 'ssl_cert', 'ssl_key', 'datadir', 'basedir
 random_pwd_length: '50'  # must be string-type
 mariadb_backup_privileges: '*.*:SELECT,RELOAD,PROCESS,LOCK TABLES,BINLOG MONITOR,SHOW VIEW,EVENT,TRIGGER'
 tmp_pwd_file_prefix: '/tmp/.ansibleguy.infra_mariadb_'
+no_prompts: false  # if you don't want to be asked for the service restart => set it to 'yes' if it should restart the services
