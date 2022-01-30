@@ -1,7 +1,7 @@
 [![MariaDB](https://mariadb.com/wp-content/uploads/2019/11/mariadb-logo-vertical_blue.svg)](https://mariadb.com)
 
 
-# MariaDB Multi-Instance Ansible Role
+# Ansible Role - MariaDB Database - Multi-Instance
 Ansible Role to deploy one or multiple MariaDB instances on a linux server.
 
 **Tested:**
