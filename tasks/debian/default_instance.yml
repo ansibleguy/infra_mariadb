@@ -25,7 +25,7 @@
   register: mariadb_instance_initialized
 
 - name: MariaDB | Debian | Default-Instance | Initializing instance
-  ansible.builtin.shell: "mysql_install_db --user={{ mariadb_default_instance_settings.user }} --datadir={{ mariadb_default_instance_settings.datadir }}"
+  ansible.builtin.command: "mysql_install_db --user={{ mariadb_default_instance_settings.user }} --datadir={{ mariadb_default_instance_settings.datadir }}"
   register: mariadb_default_instance_init
   when: not mariadb_instance_initialized.stat.exists
 
