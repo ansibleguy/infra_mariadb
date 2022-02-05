@@ -6,7 +6,7 @@
   register: removal_prompt
   when: not force_removal
 
-- name: "MariaDB | Debian | Remove Instance '{{ name }}' | Dumping database data before removing it (to '{{ path_backup }}/{{ name }}_{{ ansible_date_time.iso8601_basic_short }}_pre-removal.sql.xz')"
+- name: "MariaDB | Debian | Remove Instance '{{ name }}' | Dumping database data before removing it"
   community.mysql.mysql_db:
     state: 'dump'
     name: all
@@ -20,6 +20,14 @@
     - removal_prompt.user_input == 'yes'
   register: removal_dump
   ignore_errors: true  # if the db service is already stopped..
+
+- name: "MariaDB | Debian | Remove Instance '{{ name }}' || Dump info"
+  ansible.builtin.debug:
+    msg: "Dumped database to: '{{ path_backup }}/{{ name }}_{{ ansible_date_time.iso8601_basic_short }}_pre-removal.sql.xz'"
+  when:
+    - not force_removal
+    - removal_dump is defined
+    - removal_dump.failed is undefined or not removal_dump.failed
 
 - name: "MariaDB | Debian | Remove Instance '{{ name }}' | Ask user if we should continue"
   ansible.builtin.pause:

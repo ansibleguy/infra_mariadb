@@ -2,7 +2,7 @@
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Backup | Getting backup-user credentials"
   ansible.builtin.set_fact:
-    backup_pwd: "{{ backup.creds.pwd | default('') | fallback(lookup('password', tmp_pwd_file_prefix + name + '_backup chars=ascii_letters,digits length=' + random_pwd_length)) }}"
+    backup_pwd: "{{ backup.creds.pwd | default(lookup('password', tmp_pwd_pref + name + '_bak chars=ascii_letters,digits length=' + random_pwd_length), true) }}"
     backup_user: "{{ backup.creds.user | default('backup_' + name, true) }}"
   tags: [instances, users, config, backup]
 
@@ -74,5 +74,5 @@
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Backup | Cleaning up temporary password file"
   ansible.builtin.file:
-    path: "{{ tmp_pwd_file_prefix }}{{ name }}_backup"
+    path: "{{ tmp_pwd_pref }}{{ name }}_bak"
     state: absent

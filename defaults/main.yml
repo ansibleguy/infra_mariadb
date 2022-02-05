@@ -41,7 +41,7 @@ default_mariadb:
     compress: true
     compression_level: 7  # xz-compression
     compression_cores: "{% if ansible_processor_cores - 2 > 0 %}{{ ansible_processor_cores - 2 }}{% else %}1{% endif %}"
-    dbs: [ ]
+    dbs: []
     path: '/var/backups/mariadb'
     service_prefix: ''
     retention_days: 30
@@ -57,9 +57,9 @@ default_instance_config:
   ansible_user: 'root'
   ansible_pwd:
   root_pwd:
-  dbs: { }
-  users: { }
-  ssl: false
+  dbs: {}
+  users: {}
+  ssl: false  # todo: enforce ssl if listen is not localhost
   # if enabled you must place the following certificates in the following directory:
   #   ${path_ssl}/${INSTANCE_KEY}/ca.pem
   #   ${path_ssl}/${INSTANCE_KEY}/cert.pem
@@ -81,7 +81,9 @@ default_instance_config:
     collation-server: 'utf8mb4_general_ci'
     innodb_file_per_table: 1
     innodb_buffer_pool_size: '512M'
-    innodb_log_file_size: '128M'  # should be equal to one hour’s worth of log entries during peak load => see: https://mariadb.com/resources/blog/10-database-tuning-tips-for-peak-workloads/
+    innodb_log_file_size: '128M'
+    # should be equal to one hour’s worth of log entries during peak load
+    # see: https://mariadb.com/resources/blog/10-database-tuning-tips-for-peak-workloads/
     max_allowed_packet: '512M'
     max_connections: 500
     skip-name-resolve:
@@ -136,5 +138,5 @@ base_packages:
 mariadb_settings_graylist: ['ssl_ca', 'ssl_cert', 'ssl_key', 'datadir', 'basedir', 'socket', 'pid-file', 'port']
 random_pwd_length: '50'  # must be string-type
 mariadb_backup_privileges: '*.*:SELECT,RELOAD,PROCESS,LOCK TABLES,BINLOG MONITOR,SHOW VIEW,EVENT,TRIGGER'
-tmp_pwd_file_prefix: '/tmp/.ansibleguy.infra_mariadb_'
+tmp_pwd_pref: '/tmp/.ansibleguy.infra_mariadb_'
 no_prompts: false  # if you don't want to be asked for the service restart => set it to 'yes' if it should restart the services
