@@ -132,7 +132,7 @@ mariadb_startup_checks:
 # packages
 base_packages:
   debian:
-    other: ['mariadb-client', 'mariadb-server', 'python3-pymysql']
+    other: ['systemd', 'mariadb-client', 'mariadb-server', 'python3-pymysql']
 
 # these settings are configured 'manually' in the jinja template and cannot be set when provided in 'settins'
 mariadb_settings_graylist: ['ssl_ca', 'ssl_cert', 'ssl_key', 'datadir', 'basedir', 'socket', 'pid-file', 'port']
