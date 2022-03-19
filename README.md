@@ -62,7 +62,7 @@ For now, you need to provide the certificates manually (_placed in /etc/mysql/ss
 
 * **Tip:** If you are mounting the datadir explicitly - you should set some mount options to optimize performance:
   * noatime,nodiratime
-  * **Risky ones:** barrier=0,commit=60,data=writeback (_only use if you have a secure/fail-resistant storage_)
+
 
 ## Requirements
 
