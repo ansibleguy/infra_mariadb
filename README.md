@@ -4,6 +4,9 @@
 # Ansible Role - MariaDB Database - Multi-Instance
 Ansible Role to deploy one or multiple MariaDB instances on a linux server.
 
+[![Ansible Galaxy](https://img.shields.io/ansible/role/56758)](https://galaxy.ansible.com/ansibleguy/infra_mariadb)
+[![Ansible Galaxy Downloads](https://img.shields.io/badge/dynamic/json?color=blueviolet&label=Galaxy%20Downloads&query=%24.download_count&url=https%3A%2F%2Fgalaxy.ansible.com%2Fapi%2Fv1%2Froles%2F56758%2F%3Fformat%3Djson)](https://galaxy.ansible.com/ansibleguy/infra_mariadb)
+
 **Tested:**
 * Debian 11
 
