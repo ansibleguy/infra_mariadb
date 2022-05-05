@@ -37,7 +37,10 @@ default_mariadb:
   # backup config
   backup:
     enabled: false
-    time: 'Sun 00:00'  # for syntax see: https://wiki.archlinux.org/title/Systemd/Timers
+    time: 'Sun 00:00'
+    # for date-time format see:
+    #   https://wiki.archlinux.org/title/Systemd/Timers
+    #   https://silentlad.com/systemd-timers-oncalendar-(cron)-format-explained
     compress: true
     compression_level: 7  # xz-compression
     compression_cores: "{% if ansible_processor_cores - 2 > 0 %}{{ ansible_processor_cores - 2 }}{% else %}1{% endif %}"

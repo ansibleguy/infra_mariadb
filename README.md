@@ -118,7 +118,10 @@ mariadb:
       backup:
         enabled: true
         dbs: ['api']
-        time: '*-*-* 01:00'  # for syntax see: https://wiki.archlinux.org/title/Systemd/Timers
+        time: '*-*-* 01:00'
+        # for date-time format see:
+        #   https://wiki.archlinux.org/title/Systemd/Timers
+        #   https://silentlad.com/systemd-timers-oncalendar-(cron)-format-explained
         creds:
           create: true
 
