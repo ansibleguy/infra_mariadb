@@ -15,16 +15,20 @@ Ansible Role to deploy one or multiple MariaDB instances on a linux server.
 * Package installation
   * Ansible dependencies (_minimal_)
   * MariaDB
+
 * Configuration
   * Multiple MariaDB Instances
   * Database and User creation/deletion
   * Startup-Check-Script that supports multiple instances
+
   * Default opt-in:
     * Running secure-installation tasks
     * Swappiness lowered
     * Open file limit increased (_sysctl, service, db_)
+
   * Default opt-outs:
     * DB Backup Job
+
   * Default config:
     * Instance datadir: "/var/lib/mysql/instance_${KEY}/"
     * Instance config: "/etc/mysql/instance.conf.d/server_${KEY}.cnf"
