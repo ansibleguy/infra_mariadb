@@ -120,7 +120,7 @@ mariadb_default_instance_settings:
   skip-name-resolve:
   max_connections: 10
   innodb_file_per_table: 0
-  innodb_buffer_pool_size: '4M'
+  innodb_buffer_pool_size: '5M'
   innodb_log_file_size: '4M'
   max_allowed_packet: '4M'
   query_cache_size: '4M'
