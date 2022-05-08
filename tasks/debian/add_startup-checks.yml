@@ -24,7 +24,7 @@
     - not mariadb_instance_ro
   tags: [instances, users]
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Startup-Checks  | Configuring client-config"
+- name: "MariaDB | Debian | Add Instance '{{ name }}' | Startup-Checks | Configuring client-config"
   ansible.builtin.template:
     src: 'templates/etc/mysql/instance.conf.d/client.cnf.j2'
     dest: "{{ MARIADB_CONFIG.config.path_config }}/client_{{ name }}_startup-checks.cnf"
@@ -41,12 +41,12 @@
     - startup_check_service_user.changed
   tags: [instances, users, config]
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Startup-Checks  | Cleaning up temporary password file"
+- name: "MariaDB | Debian | Add Instance '{{ name }}' | Startup-Checks | Cleaning up temporary password file"
   ansible.builtin.file:
     path: "{{ tmp_pwd_pref }}{{ name }}_bsvc"
     state: absent
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Startup-Checks  | Ask user"
+- name: "MariaDB | Debian | Add Instance '{{ name }}' | Startup-Checks | Ask user"
   ansible.builtin.pause:
     prompt: "The MariaDB instance '{{ name }}' must be restarted for the config-changes to be applied. Can we do this now? [yes/NO]"
   register: mariadb_restart_prompt
@@ -56,7 +56,7 @@
     - startup_check_service_user.changed
     - no_prompts is undefined or not no_prompts
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Startup-Checks  | Restarting instance service"
+- name: "MariaDB | Debian | Add Instance '{{ name }}' | Startup-Checks | Restarting instance service"
   ansible.builtin.systemd:
     name: "mariadb@{{ name }}.service"
     state: restarted
