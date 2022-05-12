@@ -16,19 +16,28 @@
 
 - name: MariaDB | Debian | Configuring open file limit
   ansible.posix.sysctl:
-    name: fs.nr_open
+    name: 'fs.nr_open'
     value: '1048576'
     state: present
   when: configure_ofl_increase
   tags: [config, base]
+
+- name: MariaDB | Debian | Creating service directory
+  ansible.builtin.file:
+    path: '/etc/systemd/system/mariadb@.service.d'
+    state: directory
+    mode: 0755
+    owner: 'root'
+    group: 'root'
 
 - name: MariaDB | Debian | Creating directories
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
     mode: 0755
+    owner: 'mysql'
+    group: 'mysql'
   loop:
-    - '/etc/systemd/system/mariadb@.service.d'
     - "{{ MARIADB_CONFIG.config.path_run }}"
     - "{{ MARIADB_CONFIG.config.path_data }}"
     - "{{ MARIADB_CONFIG.config.path_config }}"

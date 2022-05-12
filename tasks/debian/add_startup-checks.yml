@@ -64,4 +64,4 @@
     - startup_check_service_user is defined
     - startup_check_service_user.changed is defined
     - startup_check_service_user.changed
-    - (mariadb_restart_prompt.user_input is defined and mariadb_restart_prompt.user_input == 'yes') or (no_prompts is defined and no_prompts == 'yes')
+    - (mariadb_restart_prompt.user_input is defined and mariadb_restart_prompt.user_input == 'yes') or (no_prompts is defined and no_prompts)

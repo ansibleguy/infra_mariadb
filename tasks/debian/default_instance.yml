@@ -51,4 +51,4 @@
     state: restarted
   when:
     - mariadb_default_instance_config.changed or not mariadb_instance_initialized.stat.exists
-    - (mariadb_restart_prompt.user_input is defined and mariadb_restart_prompt.user_input == 'yes') or (no_prompts is undefined or not no_prompts)
+    - (mariadb_restart_prompt.user_input is defined and mariadb_restart_prompt.user_input == 'yes') or (no_prompts is defined and no_prompts)
