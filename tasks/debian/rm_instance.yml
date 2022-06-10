@@ -32,6 +32,7 @@
 - name: "MariaDB | Debian | Remove Instance '{{ name }}' | Ask user if we should continue"
   ansible.builtin.pause:
     prompt: 'It seems that we are not able to dump the data of this instance! Do you still want to continue? (not recommended) [yes/NO]'
+  register: removal_dump_prompt
   when:
     - not force_removal
     - removal_dump is defined
@@ -46,6 +47,9 @@
     state: stopped
   ignore_errors: true
   failed_when: false
+  when: >
+    removal_dump_prompt.user_input is undefined or
+    removal_dump_prompt.user_input == 'yes'
 
 - name: "MariaDB | Debian | Remove Instance '{{ name }}' | Removing/Disabling backup timer"
   ansible.builtin.systemd:
@@ -55,6 +59,9 @@
     state: stopped
   ignore_errors: true
   failed_when: false
+  when: >
+    removal_dump_prompt.user_input is undefined or
+    removal_dump_prompt.user_input == 'yes'
 
 # we'll leave the backup-path as-is
 - name: "MariaDB | Debian | Remove Instance '{{ name }}' | Removing files/directories"
@@ -69,3 +76,6 @@
     - "{{ MARIADB_CONFIG.config.path_config }}/client_{{ name }}_backup.cnf"
     - "/etc/systemd/system/{{ backup.service_prefix }}backup-mariadb-{{ name }}.service"
     - "/etc/systemd/system/{{ backup.service_prefix }}backup-mariadb-{{ name }}.timer"
+  when: >
+    removal_dump_prompt.user_input is undefined or
+    removal_dump_prompt.user_input == 'yes'

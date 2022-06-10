@@ -81,6 +81,7 @@
     - {path: "{{ path_data }}", recurse: true}  # we expect that this directory will ONLY be used for this database; anything other would be bad practise
     - {path: "{{ path_backup }}", recurse: false}
   tags: [instances]
+  changed_when: false
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Configuring mariadb instance"
   ansible.builtin.template:
@@ -219,6 +220,10 @@
     login_unix_socket: "{{ socket }}"
     login_user: "{{ instance.ansible_user }}"
     login_password: "{{ instance | mgmt_pwd }}"
+  register: user_item_result
+  changed_when:
+    - item.value.update_pwd | default('on_create', true) != 'always'
+    - user_item_result.changed
   when:
     - instance.users | length > 0
     - not mariadb_instance_ro
