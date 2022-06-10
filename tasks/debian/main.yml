@@ -22,15 +22,18 @@
   when: configure_ofl_increase
   tags: [config, base]
 
-- name: MariaDB | Debian | Creating service directory
+- name: MariaDB | Debian | Creating directories
   ansible.builtin.file:
-    path: '/etc/systemd/system/mariadb@.service.d'
+    path: "{{ item }}"
     state: directory
     mode: 0755
     owner: 'root'
     group: 'root'
+  loop:
+    - "{{ MARIADB_CONFIG.config.path_base }}"
+    - '/etc/systemd/system/mariadb@.service.d'
 
-- name: MariaDB | Debian | Creating directories
+- name: MariaDB | Debian | Creating directories (owned by mysql)
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -41,7 +44,6 @@
     - "{{ MARIADB_CONFIG.config.path_run }}"
     - "{{ MARIADB_CONFIG.config.path_data }}"
     - "{{ MARIADB_CONFIG.config.path_config }}"
-    - "{{ MARIADB_CONFIG.config.path_base }}"
   tags: [config, base]
 
 - name: MariaDB | Debian | Copying port-checker script
