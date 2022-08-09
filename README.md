@@ -71,6 +71,11 @@ For now, you need to provide the certificates manually (_placed in /etc/mysql/ss
   * noatime,nodiratime
 
 
+* **Warning:** Connections via TCP/IP to localhost/127.0.0.1 will not work by default when 'skip-name-resolve' is enabled!
+
+  It will throw this error: ```Host '127.0.0.1' is not allowed to connect to this MariaDB server```
+
+
 ## Requirements
 
 * Community and posix collection: ```ansible-galaxy install -r requirements.yml```
@@ -249,7 +254,6 @@ guy@ansible:~# cat /etc/mysql/instance.conf.d/server_guydb.cnf
 > innodb_log_file_size = 1GB
 > max_allowed_packet = 512M
 > max_connections = 500
-> skip-name-resolve
 > query_cache_size = 64M
 > tmp_table_size = 64M
 > max_heap_table_size = 64M

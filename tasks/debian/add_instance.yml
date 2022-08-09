@@ -213,6 +213,8 @@
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Managing users"
   community.mysql.mysql_user:
     name: "{{ item.key }}"
+    host: "{{ item.value.host | default('localhost') }}"
+    host_all: "{{ item.value.host_all | default(false) }}"
     password: "{{ item.value.pwd }}"
     update_password: "{% if force_pwd_change %}always{% else %}{{ item.value.update_pwd | default('on_create', true) }}{% endif %}"
     priv: "{{ item.value.priv | default('') }}"

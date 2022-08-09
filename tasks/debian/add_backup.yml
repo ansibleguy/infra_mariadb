@@ -76,3 +76,6 @@
   ansible.builtin.file:
     path: "{{ tmp_pwd_pref }}{{ name }}_bak"
     state: absent
+  delegate_to: localhost
+  become: false
+  changed_when: false

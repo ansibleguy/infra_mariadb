@@ -89,7 +89,7 @@ default_instance_config:
     # see: https://mariadb.com/resources/blog/10-database-tuning-tips-for-peak-workloads/
     max_allowed_packet: '512M'
     max_connections: 500
-    skip-name-resolve:
+    # skip-name-resolve:  # will break localhost tcp/ip connections
     query_cache_size: '64M'
     tmp_table_size: '64M'
     max_heap_table_size: '64M'

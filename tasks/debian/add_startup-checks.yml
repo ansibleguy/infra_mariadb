@@ -43,8 +43,11 @@
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Startup-Checks | Cleaning up temporary password file"
   ansible.builtin.file:
-    path: "{{ tmp_pwd_pref }}{{ name }}_bsvc"
+    path: "{{ tmp_pwd_pref }}{{ name }}_svc"
     state: absent
+  delegate_to: localhost
+  become: false
+  changed_when: false
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Startup-Checks | Ask user"
   ansible.builtin.pause:
