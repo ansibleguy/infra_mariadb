@@ -3,6 +3,20 @@
 # if the initialization fails: you might need to manually remove the datadir else the initialization will not work!
 #   rm -rf /var/lib/mysql/instance_{KEY} => would be the default for that action
 
+- name: "MariaDB | Debian | Add Instance '{{ name }}' | Showing debug info - user provided config"
+  ansible.builtin.debug:
+    var: instance_item.value
+  when:
+    - debug is defined
+    - debug
+
+- name: "MariaDB | Debian | Add Instance '{{ name }}' | Showing debug info - running config"
+  ansible.builtin.debug:
+    var: instance
+  when:
+    - debug is defined
+    - debug
+
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Checking if config exists"
   ansible.builtin.stat:
     path: "{{ MARIADB_CONFIG.config.path_config }}/server_{{ name }}.cnf"

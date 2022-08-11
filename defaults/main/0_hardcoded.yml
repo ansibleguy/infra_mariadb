@@ -1,0 +1,42 @@
+---
+
+# mariadb default-instance lockdown settings => since I found no clean way to disable/remove the default instance
+mariadb_default_instance_settings:
+  datadir: "{{ MARIADB_CONFIG.config.path_data }}/default"
+  basedir: "{{ MARIADB_CONFIG.config.path_base }}"
+  socket: "{{ MARIADB_CONFIG.config.path_run }}/mysqld_default.sock"
+  pid-file: "{{ MARIADB_CONFIG.config.path_run }}/mysqld_default.pid"
+  user: 'mysql'
+  group: 'mysql'
+  bind_address: '127.0.0.1'
+  port: 3300
+  log_warnings: 3
+  wait_timeout: 30
+  symbolic-links: 0
+  local-infile: 0
+  skip-name-resolve:
+  max_connections: 10
+  innodb_file_per_table: 0
+  innodb_buffer_pool_size: '5M'
+  innodb_log_file_size: '4M'
+  max_allowed_packet: '4M'
+  query_cache_size: '4M'
+  tmp_table_size: '4M'
+  slow-query-log: 0
+
+# mariadb startup-checks config
+mariadb_startup_checks:
+  user: 'mariadb_startup_checks'
+  pwd:  # is randomly generated if no password is supplied
+
+# packages
+base_packages:
+  debian:
+    other: ['systemd', 'mariadb-client', 'mariadb-server', 'python3-pymysql']
+
+# these settings are configured 'manually' in the jinja template and cannot be set when provided in 'settins'
+mariadb_settings_graylist: ['ssl_ca', 'ssl_cert', 'ssl_key', 'datadir', 'basedir', 'socket', 'pid-file', 'port']
+random_pwd_length: '50'  # must be string-type
+mariadb_backup_privileges: '*.*:SELECT,RELOAD,PROCESS,LOCK TABLES,BINLOG MONITOR,SHOW VIEW,EVENT,TRIGGER'
+tmp_pwd_pref: '/tmp/.ansibleguy.infra_mariadb_'
+no_prompts: false  # if you don't want to be asked for the service restart => set it to 'yes' if it should restart the services

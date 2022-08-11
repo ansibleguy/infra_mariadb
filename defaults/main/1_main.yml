@@ -1,0 +1,57 @@
+---
+
+# main switches
+configure_backup: false
+configure_swappiness: true  # see: https://mariadb.com/kb/en/configuring-swappiness/
+configure_ofl_increase: true  # if the open file limit should be increased
+configure_secure: true  # secure-installation tasks
+force_pwd_change: false  # if you need to update ALL passwords for some reason (security break or something like that)
+force_removal: false
+
+# default config => is overwritten by provided config
+default_mariadb:
+  instances: {}
+
+  # configuration shared for all instances
+  config:
+    path_run: '/run/mysqld'
+    path_data: '/var/lib/mysql'
+    path_ssl: '/etc/mysql/ssl'
+    path_config: '/etc/mysql/instance.conf.d'
+    path_base: '/usr'
+    path_lc: '/usr/share/mysql'
+
+  # service settings
+  service:  # see: https://mariadb.com/kb/en/systemd & https://www.freedesktop.org/software/systemd/man/systemd.exec.html
+    LimitNOFILE: 1048576
+    StandardOutput: 'journal'
+    StandardError: 'journal'
+    SyslogIdentifier: 'mariadb_%I'
+    TimeoutStartSec: 900  # https://mariadb.com/kb/en/library/systemd/#configuring-the-systemd-service-timeout
+    TimeoutStopSec: 900
+    Restart: 'on-abort'
+    RestartSec: '5s'
+    OOMScoreAdjust: '-600'  # Kernels like killing mariadbd when out of memory because its big
+    BlockIOWeight: 1000  # start with high IO priority
+
+  # backup config
+  backup:
+    enabled: false
+    time: 'Sun 00:00'
+    # for date-time format see:
+    #   https://wiki.archlinux.org/title/Systemd/Timers
+    #   https://silentlad.com/systemd-timers-oncalendar-(cron)-format-explained
+    compress: true
+    compression_level: 7  # xz-compression
+    compression_cores: "{% if ansible_processor_cores - 2 > 0 %}{{ ansible_processor_cores - 2 }}{% else %}1{% endif %}"
+    dbs: []
+    path: '/var/backups/mariadb'
+    service_prefix: ''
+    retention_days: 30
+    creds:
+      user: 'root'
+      pwd:
+      defaults_file:
+      login_path:
+
+MARIADB_CONFIG: "{{ default_mariadb | combine(mariadb, recursive=true) }}"

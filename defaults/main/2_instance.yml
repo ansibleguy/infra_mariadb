@@ -1,0 +1,48 @@
+---
+
+# instance-specific config
+defaults_instance:
+  state: 'present'
+  ansible_user: 'root'
+  ansible_pwd:
+  root_pwd:
+  dbs: {}
+  users: {}
+  ssl: false  # todo: enforce ssl if listen is not localhost
+  # if enabled you must place the following certificates in the following directory:
+  #   ${path_ssl}/${INSTANCE_KEY}/ca.pem
+  #   ${path_ssl}/${INSTANCE_KEY}/cert.pem
+  #   ${path_ssl}/${INSTANCE_KEY}/key.pem
+
+  backup:
+    enabled: false
+
+  settings:
+    # these settings are just some defaults for small databases
+    # i'm no DBA => therefore these might not be optimal
+    # see: https://mariadb.com/kb/en/innodb-system-variables/
+    user: 'mysql'
+    group: 'mysql'
+    bind_address: '127.0.0.1'
+    port:  # if no port is provided the role will get a free one to use; it will be persistent after the initial configuration
+    log_warnings: 2  # log verbosity => see: https://mariadb.com/kb/en/error-log/
+    character-set-server: 'utf8mb4'
+    collation-server: 'utf8mb4_general_ci'
+    innodb_file_per_table: 1
+    innodb_buffer_pool_size: '512M'
+    innodb_log_file_size: '128M'
+    # should be equal to one hour’s worth of log entries during peak load
+    # see: https://mariadb.com/resources/blog/10-database-tuning-tips-for-peak-workloads/
+    max_allowed_packet: '512M'
+    max_connections: 500
+    # skip-name-resolve:  # will break localhost tcp/ip connections
+    query_cache_size: '64M'
+    tmp_table_size: '64M'
+    max_heap_table_size: '64M'
+    slow-query-log: 1
+    slow-query-log-file: 'slow-queries.log'
+    long_query_time: 1
+    wait_timeout: 60
+    symbolic-links: 0
+    local-infile: 0
+    open_files_limit: 1048576

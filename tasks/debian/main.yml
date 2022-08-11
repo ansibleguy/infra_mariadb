@@ -1,5 +1,19 @@
 ---
 
+- name: MariaDB | Debian | Showing debug info - user provided config
+  ansible.builtin.debug:
+    var: mariadb
+  when:
+    - debug is defined
+    - debug
+
+- name: MariaDB | Debian | Showing debug info - running config
+  ansible.builtin.debug:
+    var: MARIADB_CONFIG
+  when:
+    - debug is defined
+    - debug
+
 - name: MariaDB | Debian | Install packages
   ansible.builtin.apt:
     name: "{{ base_packages.debian[ansible_distribution_major_version] | default(base_packages.debian.other, true) }}"
@@ -85,7 +99,7 @@
   ansible.builtin.include_tasks: add_instance.yml
   when: instance.state == 'present'
   vars:
-    instance: "{{ default_instance_config | combine(instance_item.value, recursive=true) }}"
+    instance: "{{ defaults_instance | combine(instance_item.value, recursive=true) }}"
     backup: "{{ MARIADB_CONFIG.backup | combine(instance_item.value.backup | default({}, true), recursive=true) }}"
     name: "{{ instance_item.key | safe_key }}"
     socket: "{{ MARIADB_CONFIG.config.path_run }}/mysqld_{{ name }}.sock"
@@ -101,7 +115,7 @@
   ansible.builtin.include_tasks: rm_instance.yml
   when: instance.state != 'present'
   vars:
-    instance: "{{ default_instance_config | combine(instance_item.value, recursive=true) }}"
+    instance: "{{ defaults_instance | combine(instance_item.value, recursive=true) }}"
     backup: "{{ MARIADB_CONFIG.backup | combine(instance_item.value.backup | default({}, true), recursive=true) }}"
     name: "{{ instance_item.key | safe_key }}"
     socket: "{{ MARIADB_CONFIG.config.path_run }}/mysqld_{{ name }}.sock"

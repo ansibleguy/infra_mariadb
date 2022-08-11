@@ -177,6 +177,11 @@ There are also some useful **tags** available:
 * backup => instance backup-jobs
 * users
 
+To debug errors - you can set the 'debug' variable at runtime:
+```bash
+ansible-playbook -K -D -i inventory/hosts.yml playbook.yml -e debug=yes
+```
+
 ### Example
 
 
