@@ -59,6 +59,7 @@
     - "{{ MARIADB_CONFIG.config.path_data }}"
     - "{{ MARIADB_CONFIG.config.path_config }}"
   tags: [config, base]
+  changed_when: false
 
 - name: MariaDB | Debian | Copying port-checker script
   ansible.builtin.copy:
