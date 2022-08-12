@@ -101,6 +101,8 @@
   ansible.builtin.template:
     src: 'templates/etc/mysql/instance.conf.d/instance.cnf.j2'
     dest: "{{ MARIADB_CONFIG.config.path_config }}/server_{{ name }}.cnf"
+    owner: 'root'
+    group: 'mysql'
     mode: 0640
   no_log: true
   tags: [instances, config]
