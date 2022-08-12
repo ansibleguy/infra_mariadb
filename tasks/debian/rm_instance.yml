@@ -21,7 +21,7 @@
   register: removal_dump
   ignore_errors: true  # if the db service is already stopped..
 
-- name: "MariaDB | Debian | Remove Instance '{{ name }}' || Dump info"
+- name: "MariaDB | Debian | Remove Instance '{{ name }}' | Dump info"
   ansible.builtin.debug:
     msg: "Dumped database to: '{{ path_backup }}/{{ name }}_{{ ansible_date_time.iso8601_basic_short }}_pre-removal.sql.xz'"
   when:

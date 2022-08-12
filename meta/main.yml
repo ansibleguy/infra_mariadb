@@ -3,11 +3,8 @@
 galaxy_info:
   author: 'AnsibleGuy <guy@ansibleguy.net>'
   namespace: 'ansibleguy'
-  readme: 'README.md'
   license: 'GPLv3'
-  repository: 'https://github.com/ansibleguy/infra_mariadb'
   issue_tracker_url: 'https://github.com/ansibleguy/infra_mariadb/issues'
-  github_branch: 'stable'
   min_ansible_version: 2.9.0
   description: 'Role to deploy one or multiple MariaDB instances on a linux server'
   platforms:
