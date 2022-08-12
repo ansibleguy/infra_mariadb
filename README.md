@@ -54,7 +54,9 @@ Else the user-/db-creation tasks might break your sync!
 * **Note:** this role currently only supports debian-based systems
 
 
-* **Note:** Most of this functionality can be opted in or out using the main defaults file and variables!
+* **Note:** Most of the role's functionality can be opted in or out.
+
+  For all available options - see the default-config located in the main defaults-file!
 
 
 * **Note:** We use the official community modules for [database](https://docs.ansible.com/ansible/latest/collections/community/mysql/mysql_db_module.html) and [user](https://docs.ansible.com/ansible/latest/collections/community/mysql/mysql_user_module.html#ansible-collections-community-mysql-mysql-user-module) configuration. [Replication support](https://docs.ansible.com/ansible/latest/collections/community/mysql/mysql_replication_module.html#ansible-collections-community-mysql-mysql-replication-module) might get added later on.
