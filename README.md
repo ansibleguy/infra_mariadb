@@ -46,8 +46,8 @@ Ansible Role to deploy one or multiple MariaDB instances on a linux server.
 
 ## Info
 
-* **WARNING:** This role expects that the default mariadb/mysql instance (_mysql.service/mariadb.service_) on the target system is not and will not be used!<br>
-It might **NOT BE ACCESSIBLE** after running this role!!
+* **WARNING:** This role expects that the **default mariadb/mysql instance** (_mysql.service/mariadb.service_) on the target system is not and will not be used!<br>
+It's **socket and port is changed** by running this role!
 
 
 * **WARNING:** If you are running your db servers in an active-active configuration you should **NEVER** run the role on both nodes at the same time!<br>
