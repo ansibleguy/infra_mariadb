@@ -134,6 +134,7 @@
     login_password: "{{ instance | mgmt_pwd }}"
   register: mariadb_instance_ro_raw
   when: mariadb_instance_initialized.stat.exists
+  check_mode: false
   tags: [instances, users, dbs]
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Setting r/o state"
