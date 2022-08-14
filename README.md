@@ -1,5 +1,4 @@
-[![MariaDB](https://mariadb.com/wp-content/uploads/2019/11/mariadb-logo-vertical_blue.svg)](https://mariadb.com)
-
+<img src="https://mariadb.com/wp-content/uploads/2019/11/mariadb-logo-vertical_blue.svg" alt="MariaDB Logo" width="300"/>
 
 # Ansible Role - MariaDB Database - Multi-Instance
 Ansible Role to deploy one or multiple MariaDB instances on a linux server.
