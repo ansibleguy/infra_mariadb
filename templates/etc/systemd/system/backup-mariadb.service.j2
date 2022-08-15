@@ -17,6 +17,11 @@ Type=simple
 User={{ instance.settings.user }}
 Group={{ instance.settings.group }}
 ExecStart=/usr/local/sbin/backup_mariadb_{{ name }}.sh
+{% if ansible_distribution_version == '10' %}
+StandardOutput=syslog
+StandardError=syslog
+{% else %}
 StandardOutput=journal
 StandardError=journal
+{% endif %}
 SyslogIdentifier=mariadb_backup_{{ name }}

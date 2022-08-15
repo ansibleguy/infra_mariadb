@@ -24,8 +24,8 @@ default_mariadb:
   # service settings
   service:  # see: https://mariadb.com/kb/en/systemd & https://www.freedesktop.org/software/systemd/man/systemd.exec.html
     LimitNOFILE: 1048576
-    StandardOutput: 'journal'
-    StandardError: 'journal'
+    StandardOutput: "{{ 'syslog' if ansible_distribution_version == '10' else 'journal' }}"
+    StandardError: "{{ 'syslog' if ansible_distribution_version == '10' else 'journal' }}"
     SyslogIdentifier: 'mariadb_%I'
     TimeoutStartSec: 900  # https://mariadb.com/kb/en/library/systemd/#configuring-the-systemd-service-timeout
     TimeoutStopSec: 900
