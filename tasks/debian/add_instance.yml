@@ -70,7 +70,7 @@
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Setting port as configured"
   ansible.builtin.set_fact:
-    mariadb_port: "{{ mariadb_port_raw.stdout }}"
+    mariadb_port: "{{ instance.settings.port }}"
   when: mariadb_port is undefined
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Creating ssl directory"
