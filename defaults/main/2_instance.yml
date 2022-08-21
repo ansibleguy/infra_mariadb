@@ -43,6 +43,7 @@ defaults_instance:
     slow-query-log-file: 'slow-queries.log'
     long_query_time: 1
     wait_timeout: 60
+    interactive_timeout: 60  # mysqldump's and so on
     symbolic-links: 0
     local-infile: 0
     open_files_limit: 1048576
