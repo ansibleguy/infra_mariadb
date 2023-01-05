@@ -23,7 +23,9 @@
   register: mariadb_config_raw
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Getting configured port"
-  ansible.builtin.shell: "cat {{ MARIADB_CONFIG.config.path_config }}/server_{{ name }}.cnf | grep port | cut -d '=' -f2 | xargs"
+  ansible.builtin.shell: |
+    set -o pipefail
+    cat {{ MARIADB_CONFIG.config.path_config }}/server_{{ name }}.cnf | grep port | cut -d '=' -f2 | xargs
   register: mariadb_port_existing_raw
   changed_when: false
   check_mode: false

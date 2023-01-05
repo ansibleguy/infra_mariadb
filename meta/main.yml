@@ -17,4 +17,4 @@ galaxy_info:
     - 'database'
 
 collections:
-  'community.mysql'
+  - 'community.mysql'

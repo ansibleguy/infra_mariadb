@@ -41,7 +41,7 @@
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Backup | Checking for backup credential-file"
   ansible.builtin.set_fact:
-    backup_defaults_file: "{{ backup.creds.defaults_file | default(MARIADB_CONFIG.config.path_config + '/client_' + name +  '_backup.cnf', true) }}"
+    backup_defaults_file: "{{ backup.creds.defaults_file | default(MARIADB_CONFIG.config.path_config + '/client_' + name + '_backup.cnf', true) }}"
   when: >
     backup.creds.create | default(false, true) or
     (backup.creds.pwd is defined and backup.creds.pwd | default(none, true) is not none) or
