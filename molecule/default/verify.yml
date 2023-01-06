@@ -1,0 +1,25 @@
+---
+
+- name: Verify
+  hosts: all
+  gather_facts: false
+  tasks:
+    - name: Checking that services are running and enabled
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        enabled: true
+        state: started
+      check_mode: true
+      register: svc_test
+      loop:
+        - 'mariadb@test1.service'
+        - 'mariadb@test2.service'
+      failed_when: svc_test.changed
+
+    - name: Checking that services survive restart
+      ansible.builtin.systemd:
+        name: "{{ item }}"
+        state: restarted
+      loop:
+        - 'mariadb@test1.service'
+        - 'mariadb@test2.service'

@@ -52,8 +52,8 @@
     path: "{{ item }}"
     state: directory
     mode: 0755
-    owner: 'mysql'
-    group: 'mysql'
+    owner: "{{ MDB_HC.user }}"
+    group: "{{ MDB_HC.user }}"
   loop:
     - "{{ MARIADB_CONFIG.config.path_run }}"
     - "{{ MARIADB_CONFIG.config.path_data }}"

@@ -1,13 +1,16 @@
 ---
 
+MDB_HC:
+  user: 'mysql'
+
 # mariadb default-instance lockdown settings => since I found no clean way to disable/remove the default instance
 mariadb_default_instance_settings:
   datadir: "{{ MARIADB_CONFIG.config.path_data }}/default"
   basedir: "{{ MARIADB_CONFIG.config.path_base }}"
   socket: "{{ MARIADB_CONFIG.config.path_run }}/mysqld_default.sock"
   pid-file: "{{ MARIADB_CONFIG.config.path_run }}/mysqld_default.pid"
-  user: 'mysql'
-  group: 'mysql'
+  user: "{{ MDB_HC.user }}"
+  group: "{{ MDB_HC.user }}"
   bind_address: '127.0.0.1'
   port: 3300
   log_warnings: 3

@@ -21,8 +21,8 @@ defaults_instance:
     # these settings are just some defaults for small databases
     # i'm no DBA => therefore these might not be optimal
     # see: https://mariadb.com/kb/en/innodb-system-variables/
-    user: 'mysql'
-    group: 'mysql'
+    user: "{{ MDB_HC.user }}"
+    group: "{{ MDB_HC.user }}"
     bind_address: '127.0.0.1'
     port:  # if no port is provided the role will get a free one to use; it will be persistent after the initial configuration
     log_warnings: 2  # log verbosity => see: https://mariadb.com/kb/en/error-log/
