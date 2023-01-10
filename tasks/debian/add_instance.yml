@@ -269,3 +269,13 @@
     configure_backup or
     backup.enabled
   tags: [instances, config, backup, users]
+
+- name: "MariaDB | Debian | Add Instance '{{ name }}' | Privileges on mysql_upgrade_info"
+  ansible.builtin.file:
+    path: "{{ path_data }}/mysql_upgrade_info"
+    owner: "{{ instance.settings.user }}"
+    group: "{{ instance.settings.group }}"
+    state: touch
+    mode: 0754
+    modification_time: preserve
+    access_time: preserve
