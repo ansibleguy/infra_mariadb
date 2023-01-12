@@ -12,6 +12,18 @@ Ansible Role to deploy one or multiple MariaDB instances on a linux server.
 **Tested:**
 * Debian 11
 
+## Install
+
+```bash
+ansible-galaxy install ansibleguy.infra_mariadb
+
+# or to custom role-path
+ansible-galaxy install ansibleguy.infra_mariadb --roles-path ./roles
+
+# install dependencies
+ansible-galaxy install -r requirements.yml
+```
+
 ## Functionality
 
 * Package installation
@@ -78,11 +90,6 @@ For now, you need to provide the certificates manually (_placed in /etc/mysql/ss
 * **Warning:** Connections via TCP/IP to localhost/127.0.0.1 will not work by default when 'skip-name-resolve' is enabled!
 
   It will throw this error: ```Host '127.0.0.1' is not allowed to connect to this MariaDB server```
-
-
-## Requirements
-
-* Community and posix collection: ```ansible-galaxy install -r requirements.yml```
 
 
 ## Usage
