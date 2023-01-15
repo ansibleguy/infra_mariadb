@@ -279,3 +279,4 @@
     mode: 0754
     modification_time: preserve
     access_time: preserve
+  changed_when: false
