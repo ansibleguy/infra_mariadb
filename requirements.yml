@@ -3,5 +3,5 @@
 # install: ansible-galaxy install -r requirements.yml
 
 collections:
-  - name: 'community.mysql'
-  - name: 'ansible.posix'
+  - 'community.mysql'
+  - 'ansible.posix'
