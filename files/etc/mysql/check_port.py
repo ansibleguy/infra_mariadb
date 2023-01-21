@@ -13,18 +13,18 @@ CMD_LISTEN = "lsof -i -P -n | grep LISTEN | grep -cq ':%s'"
 
 
 def check(cmd: str) -> bool:
-    process = subprocess_popen(
+    with subprocess_popen(
         cmd,
         shell=True,
         stdout=subprocess_pipe,
         stderr=subprocess_pipe
-    )
-    process.communicate()
+    ) as process:
+        process.communicate()
 
-    if process.returncode == 0:
-        return True
+        if process.returncode == 0:
+            return True
 
-    return False
+        return False
 
 
 INSTANCE_PATH = sys_argv[1]
