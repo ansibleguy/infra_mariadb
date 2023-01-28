@@ -112,6 +112,9 @@
   with_dict: "{{ MARIADB_CONFIG.instances }}"
   no_log: true
   tags: [instances, backup, config, users, dbs]
+  args:
+    apply:
+      tags: [instances, backup, config, users, dbs]
 
 - name: MariaDB | Debian | Removing mariadb instances
   ansible.builtin.include_tasks: rm_instance.yml
@@ -128,3 +131,6 @@
   with_dict: "{{ MARIADB_CONFIG.instances }}"
   no_log: true
   tags: [instances, backup, config, users, dbs]
+  args:
+    apply:
+      tags: [instances, backup, config, users, dbs]

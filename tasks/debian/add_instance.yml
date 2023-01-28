@@ -261,6 +261,9 @@
   ansible.builtin.include_tasks: add_startup-checks.yml
   no_log: true
   tags: [instances, config, users]
+  args:
+    apply:
+      tags: [instances, config, users]
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Configuring backup"
   ansible.builtin.include_tasks: add_backup.yml
@@ -269,6 +272,9 @@
     configure_backup or
     backup.enabled
   tags: [instances, config, backup, users]
+  args:
+    apply:
+      tags: [instances, config, backup, users]
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Privileges on mysql_upgrade_info"
   ansible.builtin.file:
