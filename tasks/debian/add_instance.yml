@@ -120,6 +120,7 @@
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Initializing instance"
   ansible.builtin.command: "mysql_install_db --user={{ instance.settings.user }} --datadir={{ path_data }}"
   when: not mariadb_instance_initialized.stat.exists
+  changed_when: false
   tags: [instances]
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Enabling/Starting instance service"
