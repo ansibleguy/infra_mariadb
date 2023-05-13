@@ -1,12 +1,12 @@
 ---
 
-- name: "MariaDB | Debian | Remove Instance '{{ name }}' | Ask user"
+- name: "MariaDB | Remove Instance '{{ name }}' | Ask user"
   ansible.builtin.pause:
     prompt: "Do you really want to remove the database instance '{{ name }}' and all of its data? Do you want to try to dump its data before removing it? [yes/NO]!"
   register: removal_prompt
   when: not force_removal
 
-- name: "MariaDB | Debian | Remove Instance '{{ name }}' | Dumping database data before removing it"
+- name: "MariaDB | Remove Instance '{{ name }}' | Dumping database data before removing it"
   community.mysql.mysql_db:
     state: 'dump'
     name: all
@@ -21,7 +21,7 @@
   register: removal_dump
   ignore_errors: true  # if the db service is already stopped..
 
-- name: "MariaDB | Debian | Remove Instance '{{ name }}' | Dump info"
+- name: "MariaDB | Remove Instance '{{ name }}' | Dump info"
   ansible.builtin.debug:
     msg: "Dumped database to: '{{ path_backup }}/{{ name }}_{{ ansible_date_time.iso8601_basic_short }}_pre-removal.sql.xz'"
   when:
@@ -29,7 +29,7 @@
     - removal_dump is defined
     - removal_dump.failed is undefined or not removal_dump.failed
 
-- name: "MariaDB | Debian | Remove Instance '{{ name }}' | Ask user if we should continue"
+- name: "MariaDB | Remove Instance '{{ name }}' | Ask user if we should continue"
   ansible.builtin.pause:
     prompt: 'It seems that we are not able to dump the data of this instance! Do you still want to continue? (not recommended) [yes/NO]'
   register: removal_dump_prompt
@@ -39,7 +39,7 @@
     - removal_dump.failed is defined
     - removal_dump.failed
 
-- name: "MariaDB | Debian | Remove Instance '{{ name }}' | Removing/Disabling instance service"
+- name: "MariaDB | Remove Instance '{{ name }}' | Removing/Disabling instance service"
   ansible.builtin.systemd:
     daemon_reload: yes
     name: "mariadb@{{ name }}.service"
@@ -51,7 +51,7 @@
     removal_dump_prompt.user_input is undefined or
     removal_dump_prompt.user_input == 'yes'
 
-- name: "MariaDB | Debian | Remove Instance '{{ name }}' | Removing/Disabling backup timer"
+- name: "MariaDB | Remove Instance '{{ name }}' | Removing/Disabling backup timer"
   ansible.builtin.systemd:
     daemon_reload: yes
     name: "{{ backup.service_prefix }}backup-mariadb-{{ name }}.timer"
@@ -64,7 +64,7 @@
     removal_dump_prompt.user_input == 'yes'
 
 # we'll leave the backup-path as-is
-- name: "MariaDB | Debian | Remove Instance '{{ name }}' | Removing files/directories"
+- name: "MariaDB | Remove Instance '{{ name }}' | Removing files/directories"
   ansible.builtin.file:
     path: "{{ MARIADB_CONFIG.config.path_ssl }}/{{ name }}"
     state: absent

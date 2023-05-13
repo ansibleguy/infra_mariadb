@@ -1,22 +1,22 @@
 ---
 
-- name: MariaDB | Debian | Showing debug info - user provided config
+- name: MariaDB | Showing debug info - user provided config
   ansible.builtin.debug:
     var: mariadb
   when: debug | bool
 
-- name: MariaDB | Debian | Showing debug info - running config
+- name: MariaDB | Showing debug info - running config
   ansible.builtin.debug:
     var: MARIADB_CONFIG
   when: debug | bool
 
-- name: MariaDB | Debian | Install packages
+- name: MariaDB | Install packages
   ansible.builtin.apt:
     name: "{{ base_packages.debian[ansible_distribution_major_version] | default(base_packages.debian.other, true) }}"
     state: present
   tags: [base]
 
-- name: MariaDB | Debian | Setting swappiness
+- name: MariaDB | Setting swappiness
   ansible.posix.sysctl:
     name: vm.swappiness
     value: '1'
@@ -24,7 +24,7 @@
   when: configure_swappiness
   tags: [config, base]
 
-- name: MariaDB | Debian | Configuring open file limit
+- name: MariaDB | Configuring open file limit
   ansible.posix.sysctl:
     name: 'fs.nr_open'
     value: '1048576'
@@ -32,7 +32,7 @@
   when: configure_ofl_increase
   tags: [config, base]
 
-- name: MariaDB | Debian | Creating directories
+- name: MariaDB | Creating directories
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -43,7 +43,7 @@
     - "{{ MARIADB_CONFIG.config.path_base }}"
     - '/etc/systemd/system/mariadb@.service.d'
 
-- name: MariaDB | Debian | Creating directories (owned by mysql)
+- name: MariaDB | Creating directories (owned by mysql)
   ansible.builtin.file:
     path: "{{ item }}"
     state: directory
@@ -57,7 +57,7 @@
   tags: [config, base]
   changed_when: false
 
-- name: MariaDB | Debian | Copying port-checker script
+- name: MariaDB | Copying port-checker script
   ansible.builtin.copy:
     src: 'files/etc/mysql/check_port.py'
     dest: '/etc/mysql/check_port.py'
@@ -65,12 +65,12 @@
     owner: 'root'
     group: 'root'
 
-- name: MariaDB | Debian | Configuring default-instance
+- name: MariaDB | Configuring default-instance
   ansible.builtin.import_tasks: default_instance.yml
   tags: [config, base]
 
 # without it the custom mariadb instances will fail to start
-- name: MariaDB | Debian | Configuring startup-check script
+- name: MariaDB | Configuring startup-check script
   ansible.builtin.template:
     src: 'templates/etc/mysql/debian-start-instance.sh.j2'
     dest: '/etc/mysql/debian-start-instance.sh'
@@ -79,7 +79,7 @@
     group: 'root'
   tags: [config, base]
 
-- name: MariaDB | Debian | Configuring mysql instance-service settings
+- name: MariaDB | Configuring mysql instance-service settings
   ansible.builtin.template:
     src: 'templates/etc/systemd/system/mariadb@.service.d/override.conf.j2'
     dest: '/etc/systemd/system/mariadb@.service.d/override.conf'
@@ -88,12 +88,12 @@
     settings: "{{ MARIADB_CONFIG.service }}"
   tags: [config, base]
 
-- name: MariaDB | Debian | Reloading systemd
+- name: MariaDB | Reloading systemd
   ansible.builtin.systemd:
     daemon_reload: yes
   tags: [config, base]
 
-- name: MariaDB | Debian | Adding mariadb instances
+- name: MariaDB | Adding mariadb instances
   ansible.builtin.include_tasks: add_instance.yml
   when: instance.state == 'present'
   vars:
@@ -112,7 +112,7 @@
     apply:
       tags: [instances, backup, config, users, dbs]
 
-- name: MariaDB | Debian | Removing mariadb instances
+- name: MariaDB | Removing mariadb instances
   ansible.builtin.include_tasks: rm_instance.yml
   when: instance.state != 'present'
   vars:
