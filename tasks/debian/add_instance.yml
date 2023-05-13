@@ -6,16 +6,12 @@
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Showing debug info - user provided config"
   ansible.builtin.debug:
     var: instance_item.value
-  when:
-    - debug is defined
-    - debug
+  when: debug | bool
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Showing debug info - running config"
   ansible.builtin.debug:
     var: instance
-  when:
-    - debug is defined
-    - debug
+  when: debug | bool
 
 - name: "MariaDB | Debian | Add Instance '{{ name }}' | Checking if config exists"
   ansible.builtin.stat:

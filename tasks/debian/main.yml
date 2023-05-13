@@ -3,16 +3,12 @@
 - name: MariaDB | Debian | Showing debug info - user provided config
   ansible.builtin.debug:
     var: mariadb
-  when:
-    - debug is defined
-    - debug
+  when: debug | bool
 
 - name: MariaDB | Debian | Showing debug info - running config
   ansible.builtin.debug:
     var: MARIADB_CONFIG
-  when:
-    - debug is defined
-    - debug
+  when: debug | bool
 
 - name: MariaDB | Debian | Install packages
   ansible.builtin.apt:
