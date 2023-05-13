@@ -3,22 +3,22 @@
 # if the initialization fails: you might need to manually remove the datadir else the initialization will not work!
 #   rm -rf /var/lib/mysql/instance_{KEY} => would be the default for that action
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Showing debug info - user provided config"
+- name: "MariaDB | Add Instance '{{ name }}' | Showing debug info - user provided config"
   ansible.builtin.debug:
     var: instance_item.value
   when: debug | bool
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Showing debug info - running config"
+- name: "MariaDB | Add Instance '{{ name }}' | Showing debug info - running config"
   ansible.builtin.debug:
     var: instance
   when: debug | bool
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Checking if config exists"
+- name: "MariaDB | Add Instance '{{ name }}' | Checking if config exists"
   ansible.builtin.stat:
     path: "{{ MARIADB_CONFIG.config.path_config }}/server_{{ name }}.cnf"
   register: mariadb_config_raw
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Getting configured port"
+- name: "MariaDB | Add Instance '{{ name }}' | Getting configured port"
   ansible.builtin.shell: |
     set -o pipefail
     cat {{ MARIADB_CONFIG.config.path_config }}/server_{{ name }}.cnf | grep port | cut -d '=' -f2 | xargs
@@ -29,7 +29,7 @@
   check_mode: false
   when: mariadb_config_raw.stat.exists
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Setting free port as exists"
+- name: "MariaDB | Add Instance '{{ name }}' | Setting free port as exists"
   ansible.builtin.set_fact:
     mariadb_port: "{{ mariadb_port_existing_raw.stdout }}"
   when:
@@ -38,7 +38,7 @@
     - mariadb_port_existing_raw.stdout is defined
   tags: [instances, config]
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Checking if configured port is free"
+- name: "MariaDB | Add Instance '{{ name }}' | Checking if configured port is free"
   ansible.builtin.command: "/usr/bin/python3 /etc/mysql/check_port.py {{ MARIADB_CONFIG.config.path_config }} {{ instance.settings.port }}"
   register: mariadb_port_free_raw
   changed_when: false
@@ -48,7 +48,7 @@
     - instance.settings.port | default(none, true) is not none
   tags: [instances, config]
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Getting free port"
+- name: "MariaDB | Add Instance '{{ name }}' | Getting free port"
   ansible.builtin.command: "/usr/bin/python3 /etc/mysql/check_port.py {{ MARIADB_CONFIG.config.path_config }}"
   register: mariadb_port_raw
   changed_when: false
@@ -59,7 +59,7 @@
     (mariadb_port_free_raw is defined and mariadb_port_free_raw.stdout == '1'))
   tags: [instances, config]
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Setting free port"
+- name: "MariaDB | Add Instance '{{ name }}' | Setting free port"
   ansible.builtin.set_fact:
     mariadb_port: "{{ mariadb_port_raw.stdout }}"
   when:
@@ -68,12 +68,12 @@
     - mariadb_port_raw.stdout is defined
   tags: [instances, config]
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Setting port as configured"
+- name: "MariaDB | Add Instance '{{ name }}' | Setting port as configured"
   ansible.builtin.set_fact:
     mariadb_port: "{{ instance.settings.port }}"
   when: mariadb_port is undefined
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Creating ssl directory"
+- name: "MariaDB | Add Instance '{{ name }}' | Creating ssl directory"
   ansible.builtin.file:
     path: "{{ MARIADB_CONFIG.config.path_ssl }}/{{ name }}"
     owner: "{{ instance.settings.user }}"
@@ -83,7 +83,7 @@
   when: instance.ssl
   tags: [instances, config]
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Creating instance directories"
+- name: "MariaDB | Add Instance '{{ name }}' | Creating instance directories"
   ansible.builtin.file:
     path: "{{ item.path }}"
     owner: "{{ instance.settings.user }}"
@@ -97,7 +97,7 @@
   tags: [instances]
   changed_when: false
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Configuring mariadb instance"
+- name: "MariaDB | Add Instance '{{ name }}' | Configuring mariadb instance"
   ansible.builtin.template:
     src: 'templates/etc/mysql/instance.conf.d/instance.cnf.j2'
     dest: "{{ MARIADB_CONFIG.config.path_config }}/server_{{ name }}.cnf"
@@ -107,19 +107,19 @@
   no_log: true
   tags: [instances, config]
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Checking if instance is initialized"
+- name: "MariaDB | Add Instance '{{ name }}' | Checking if instance is initialized"
   ansible.builtin.stat:
     path: "{{ path_data }}/mysql"
   register: mariadb_instance_initialized
   tags: [instances, users, config, dbs]
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Initializing instance"
+- name: "MariaDB | Add Instance '{{ name }}' | Initializing instance"
   ansible.builtin.command: "mysql_install_db --user={{ instance.settings.user }} --datadir={{ path_data }}"
   when: not mariadb_instance_initialized.stat.exists
   changed_when: false
   tags: [instances]
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Enabling/Starting instance service"
+- name: "MariaDB | Add Instance '{{ name }}' | Enabling/Starting instance service"
   ansible.builtin.systemd:
     daemon_reload: yes
     name: "mariadb@{{ name }}.service"
@@ -127,7 +127,7 @@
     state: started
   tags: [instances]
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Checking if instance is read-only (replication slave)"
+- name: "MariaDB | Add Instance '{{ name }}' | Checking if instance is read-only (replication slave)"
   community.mysql.mysql_query:
     query: 'SELECT @@global.read_only'
     login_unix_socket: "{{ socket }}"
@@ -138,14 +138,14 @@
   check_mode: false
   tags: [instances, users, dbs]
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Setting r/o state"
+- name: "MariaDB | Add Instance '{{ name }}' | Setting r/o state"
   ansible.builtin.set_fact:
     mariadb_instance_ro: "{{ mariadb_instance_ro_raw['query_result'][0][0]['@@global.read_only'] | bool }}"
     mariadb_instance_ro_name: "{{ name }}"
   when: mariadb_instance_initialized.stat.exists
   tags: [instances, users, dbs]
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Setting r/o default"
+- name: "MariaDB | Add Instance '{{ name }}' | Setting r/o default"
   ansible.builtin.set_fact:
     mariadb_instance_ro: false
   when: >
@@ -154,7 +154,7 @@
     mariadb_instance_ro_name != name
   tags: [instances, users, dbs]
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Running secure-installation tasks"
+- name: "MariaDB | Add Instance '{{ name }}' | Running secure-installation tasks"
   community.mysql.mysql_query:
     login_unix_socket: "{{ socket }}"
     login_user: 'root'
@@ -170,7 +170,7 @@
     - configure_secure
   tags: [instances]
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Setting root password (if provided)"
+- name: "MariaDB | Add Instance '{{ name }}' | Setting root password (if provided)"
   community.mysql.mysql_user:
     name: 'root'
     password: "{{ instance.root_pwd }}"
@@ -187,7 +187,7 @@
     - not mariadb_instance_ro
   tags: [instances, users]
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Setting root password (if provided) [without pwd]"
+- name: "MariaDB | Add Instance '{{ name }}' | Setting root password (if provided) [without pwd]"
   community.mysql.mysql_user:
     name: 'root'
     password: "{{ instance.root_pwd }}"
@@ -204,7 +204,7 @@
     - root_pwd_update.failed  # could be that the authentication failed since the ansible-user is not yet configured as expected
   tags: [instances, users]
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Flushing privileges"
+- name: "MariaDB | Add Instance '{{ name }}' | Flushing privileges"
   community.mysql.mysql_query:
     query: 'FLUSH PRIVILEGES'
     login_unix_socket: "{{ socket }}"
@@ -214,7 +214,7 @@
     (root_pwd_update is defined and root_pwd_update.changed is defined and root_pwd_update.changed) or
     (root_pwd_update_wopwd is defined and root_pwd_update_wopwd.changed is defined and root_pwd_update_wopwd.changed)
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Creating databases"
+- name: "MariaDB | Add Instance '{{ name }}' | Creating databases"
   community.mysql.mysql_db:
     name: "{{ item.key }}"
     state: "{% if item.value.state | default('') in ['present', 'absent'] %}{{ item.value.state }}{% else %}present{% endif %}"
@@ -230,7 +230,7 @@
     - not mariadb_instance_ro
   tags: [instances, dbs]
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Managing users"
+- name: "MariaDB | Add Instance '{{ name }}' | Managing users"
   community.mysql.mysql_user:
     name: "{{ item.key }}"
     host: "{{ item.value.host | default('localhost') }}"
@@ -254,7 +254,7 @@
   no_log: true
   tags: [instances, users]
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Configuring startup-checks"
+- name: "MariaDB | Add Instance '{{ name }}' | Configuring startup-checks"
   ansible.builtin.include_tasks: add_startup-checks.yml
   no_log: true
   tags: [instances, config, users]
@@ -262,7 +262,7 @@
     apply:
       tags: [instances, config, users]
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Configuring backup"
+- name: "MariaDB | Add Instance '{{ name }}' | Configuring backup"
   ansible.builtin.include_tasks: add_backup.yml
   no_log: true
   when: >
@@ -273,7 +273,7 @@
     apply:
       tags: [instances, config, backup, users]
 
-- name: "MariaDB | Debian | Add Instance '{{ name }}' | Privileges on mysql_upgrade_info"
+- name: "MariaDB | Add Instance '{{ name }}' | Privileges on mysql_upgrade_info"
   ansible.builtin.file:
     path: "{{ path_data }}/mysql_upgrade_info"
     owner: "{{ instance.settings.user }}"
