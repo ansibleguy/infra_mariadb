@@ -54,6 +54,4 @@ default_mariadb:
       defaults_file:
       login_path:
 
-MARIADB_CONFIG: "{{ default_mariadb | combine(mariadb, recursive=true) }}"
-
 debug: false

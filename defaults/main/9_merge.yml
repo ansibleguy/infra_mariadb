@@ -1,0 +1,3 @@
+---
+
+MARIADB_CONFIG: "{{ default_mariadb | combine(mariadb, recursive=true) }}"
