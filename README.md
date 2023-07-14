@@ -7,8 +7,8 @@ Ansible Role to deploy one or multiple MariaDB instances on a linux server.
 [![YamlLint Test Status](https://badges.ansibleguy.net/infra_mariadb.yamllint.svg)](https://github.com/ansibleguy/_meta_cicd/blob/latest/templates/usr/local/bin/cicd/yamllint.sh.j2)
 [![PyLint Test Status](https://badges.ansibleguy.net/infra_mariadb.pylint.svg)](https://github.com/ansibleguy/_meta_cicd/blob/latest/templates/usr/local/bin/cicd/pylint.sh.j2)
 [![Ansible-Lint Test Status](https://badges.ansibleguy.net/infra_mariadb.ansiblelint.svg)](https://github.com/ansibleguy/_meta_cicd/blob/latest/templates/usr/local/bin/cicd/ansiblelint.sh.j2)
-[![Ansible Galaxy](https://img.shields.io/ansible/role/56758)](https://galaxy.ansible.com/ansibleguy/infra_mariadb)
-[![Ansible Galaxy Downloads](https://img.shields.io/badge/dynamic/json?color=blueviolet&label=Galaxy%20Downloads&query=%24.download_count&url=https%3A%2F%2Fgalaxy.ansible.com%2Fapi%2Fv1%2Froles%2F56758%2F%3Fformat%3Djson)](https://galaxy.ansible.com/ansibleguy/infra_mariadb)
+[![Ansible Galaxy](https://img.shields.io/ansible/role/62788)](https://galaxy.ansible.com/ansibleguy/infra_mariadb)
+[![Ansible Galaxy Downloads](https://img.shields.io/badge/dynamic/json?color=blueviolet&label=Galaxy%20Downloads&query=%24.download_count&url=https%3A%2F%2Fgalaxy.ansible.com%2Fapi%2Fv1%2Froles%2F62788%2F%3Fformat%3Djson)](https://galaxy.ansible.com/ansibleguy/infra_mariadb)
 
 **Tested:**
 * Debian 11
