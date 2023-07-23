@@ -266,8 +266,8 @@
   ansible.builtin.include_tasks: add_backup.yml
   no_log: true
   when: >
-    configure_backup or
-    backup.enabled
+    configure_backup | bool or
+    backup.enabled | bool
   tags: [instances, config, backup, users]
   args:
     apply:
