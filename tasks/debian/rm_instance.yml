@@ -45,11 +45,15 @@
     name: "mariadb@{{ name }}.service"
     enabled: no
     state: stopped
-  ignore_errors: true
-  failed_when: false
   when: >
     removal_dump_prompt.user_input is undefined or
     removal_dump_prompt.user_input == 'yes'
+  register: mariadb_instance_removal
+  failed_when:
+    - mariadb_instance_removal.failed
+    - "'does not exist' not in mariadb_instance_removal.msg"
+    - "'Could not find' not in mariadb_instance_removal.msg"
+
 
 - name: "MariaDB | Remove Instance '{{ name }}' | Removing/Disabling backup timer"
   ansible.builtin.systemd:
@@ -57,11 +61,14 @@
     name: "{{ backup.service_prefix }}backup-mariadb-{{ name }}.timer"
     enabled: no
     state: stopped
-  ignore_errors: true
-  failed_when: false
   when: >
     removal_dump_prompt.user_input is undefined or
     removal_dump_prompt.user_input == 'yes'
+  register: mariadb_backup_removal
+  failed_when:
+    - mariadb_backup_removal.failed
+    - "'does not exist' not in mariadb_backup_removal.msg"
+    - "'Could not find' not in mariadb_backup_removal.msg"
 
 # we'll leave the backup-path as-is
 - name: "MariaDB | Remove Instance '{{ name }}' | Removing files/directories"
