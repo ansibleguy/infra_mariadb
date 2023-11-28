@@ -9,6 +9,8 @@ Ansible Role to deploy one or multiple MariaDB instances on a linux server.
 [![Ansible-Lint Test Status](https://badges.ansibleguy.net/infra_mariadb.ansiblelint.svg)](https://github.com/ansibleguy/_meta_cicd/blob/latest/templates/usr/local/bin/cicd/ansiblelint.sh.j2)
 [![Ansible Galaxy](https://badges.ansibleguy.net/galaxy.badge.svg)](https://galaxy.ansible.com/ui/standalone/roles/ansibleguy/infra_mariadb)
 
+[Molecule Logs (if failed)](https://badges.ansibleguy.net/log/molecule_infra_mariadb_test.log)
+
 **Tested:**
 * Debian 11
 
