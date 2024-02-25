@@ -100,6 +100,8 @@ For now, you need to provide the certificates manually (_placed in /etc/mysql/ss
 
 ## Usage
 
+You want a simple Ansible GUI? Check-out my [Ansible WebUI](https://github.com/ansibleguy/webui)
+
 ### Config
 
 You need to define your instances by configuring the 'mariadb' dictionary!
