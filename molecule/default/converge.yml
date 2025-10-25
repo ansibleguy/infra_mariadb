@@ -33,4 +33,4 @@
               pwd: 'random3'
 
   roles:
-    - ansibleguy.infra_mariadb
+    - oxlorg.mariadb

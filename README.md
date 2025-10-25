@@ -3,16 +3,16 @@
 # Ansible Role - MariaDB Database - Multi-Instance
 Ansible Role to deploy one or multiple MariaDB instances on a linux server.
 
-[![Lint](https://github.com/ansibleguy/infra_mariadb/actions/workflows/lint.yml/badge.svg)](https://github.com/ansibleguy/infra_mariadb/actions/workflows/lint.yml)
-[![Ansible Galaxy](https://badges.ansibleguy.net/galaxy.badge.svg)](https://galaxy.ansible.com/ui/standalone/roles/ansibleguy/infra_mariadb)
+[![Lint](https://github.com/O-X-L/ansible-role-mariadb/actions/workflows/lint.yml/badge.svg)](https://github.com/O-X-L/ansible-role-mariadb/actions/workflows/lint.yml)
+[![Ansible Galaxy](https://badges.oss.oxl.app/galaxy.badge.svg)](https://galaxy.ansible.com/ui/standalone/roles/oxlorg/mariadb)
 
 **Molecule Integration-Tests**:
 
-* Status: [![Molecule Test Status](https://badges.ansibleguy.net/infra_mariadb.molecule.svg)](https://github.com/ansibleguy/_meta_cicd/blob/latest/templates/usr/local/bin/cicd/molecule.sh.j2) |
-[![Functional-Tests](https://github.com/ansibleguy/infra_mariadb/actions/workflows/integration_test_result.yml/badge.svg)](https://github.com/ansibleguy/infra_mariadb/actions/workflows/integration_test_result.yml)
-* Logs: [API](https://ci.ansibleguy.net/api/job/ansible-test-molecule-infra_mariadb/logs?token=2b7bba30-9a37-4b57-be8a-99e23016ce70&lines=1000) | [Short](https://badges.ansibleguy.net/log/molecule_infra_mariadb_test_short.log) | [Full](https://badges.ansibleguy.net/log/molecule_infra_mariadb_test.log)
+* Status: [![Molecule Test Status](https://badges.oss.oxl.app/infra_mariadb.molecule.svg)](https://github.com/O-X-L/ansible-role-oxl-cicd/blob/latest/templates/usr/local/bin/cicd/molecule.sh.j2) |
+[![Functional-Tests](https://github.com/O-X-L/ansible-role-mariadb/actions/workflows/integration_test_result.yml/badge.svg)](https://github.com/O-X-L/ansible-role-mariadb/actions/workflows/integration_test_result.yml)
+* Logs: [API](https://ci.oss.oxl.app/api/job/ansible-test-molecule-infra_mariadb/logs?token=2b7bba30-9a37-4b57-be8a-99e23016ce70&lines=1000) | [Short](https://badges.oss.oxl.app/log/molecule_infra_mariadb_test_short.log) | [Full](https://badges.oss.oxl.app/log/molecule_infra_mariadb_test.log)
 
-Internal CI: [Tester Role](https://github.com/ansibleguy/_meta_cicd) | [Jobs API](https://github.com/O-X-L/github-self-hosted-jobs-systemd)
+Internal CI: [Tester Role](https://github.com/O-X-L/ansible-role-oxl-cicd) | [Jobs API](https://github.com/O-X-L/github-self-hosted-jobs-systemd)
 
 **Tested:**
 * Debian 11
@@ -24,13 +24,13 @@ Internal CI: [Tester Role](https://github.com/ansibleguy/_meta_cicd) | [Jobs API
 
 ```bash
 # latest
-ansible-galaxy role install git+https://github.com/ansibleguy/infra_mariadb
+ansible-galaxy role install git+https://github.com/O-X-L/ansible-role-mariadb
 
 # from galaxy
-ansible-galaxy install ansibleguy.infra_mariadb
+ansible-galaxy install oxlorg.mariadb
 
 # or to custom role-path
-ansible-galaxy install ansibleguy.infra_mariadb --roles-path ./roles
+ansible-galaxy install oxlorg.mariadb --roles-path ./roles
 
 # install dependencies
 ansible-galaxy install -r requirements.yml
@@ -52,7 +52,7 @@ ansible-galaxy install -r requirements.yml
 
 * You want a simple **Ansible GUI**?
 
-  Check-out this [Ansible WebUI](https://github.com/ansibleguy/webui)
+  Check-out this [Ansible WebUI](https://github.com/O-X-L/ansible-webui)
 
 ----
 
@@ -205,7 +205,7 @@ Else the user-/db-creation tasks might break your sync!
 
 * **Note:** Most of the role's functionality can be opted in or out.
 
-  For all available options - see the default-config located in [the main defaults-file](https://github.com/ansibleguy/infra_mariadb/blob/latest/defaults/main/1_main.yml)!
+  For all available options - see the default-config located in [the main defaults-file](https://github.com/O-X-L/ansible-role-mariadb/blob/latest/defaults/main/1_main.yml)!
 
 
 * **Note:** We use the official community modules for [database](https://docs.ansible.com/ansible/latest/collections/community/mysql/mysql_db_module.html) and [user](https://docs.ansible.com/ansible/latest/collections/community/mysql/mysql_user_module.html#ansible-collections-community-mysql-mysql-user-module) configuration. [Replication support](https://docs.ansible.com/ansible/latest/collections/community/mysql/mysql_replication_module.html#ansible-collections-community-mysql-mysql-replication-module) might get added later on.
@@ -324,7 +324,7 @@ guy@ansible:~# cat /etc/systemd/system/mariadb@.service.d/override.conf
 > ConditionPathExists=/etc/mysql/instance.conf.d/server_%I.cnf
 > ConditionPathExists=/etc/mysql/debian-start-instance.sh
 > ConditionPathExists=/etc/mysql/instance.conf.d/client_%I_startup-checks.cnf
-> Documentation=https://github.com/ansibleguy/infra_mariadb
+> Documentation=https://github.com/O-X-L/ansible-role-mariadb
 > 
 > [Service]
 > Environment='MYSQLD_MULTI_INSTANCE=--defaults-file=/etc/mysql/instance.conf.d/server_%I.cnf --defaults-group-suffix=.%I'
@@ -351,7 +351,7 @@ guy@ansible:~# systemctl status mariadb@guydb.service
 >      Active: active (running)
 >        Docs: man:mariadbd(8)
 >              https://mariadb.com/kb/en/library/systemd/
->              https://github.com/ansibleguy/infra_mariadb
+>              https://github.com/O-X-L/ansible-role-mariadb
 >     Process: 134872 ExecStartPre=/usr/bin/mysql_install_db $MYSQLD_MULTI_INSTANCE (code=exited, status=0/SUCCESS)
 >     Process: 134910 ExecStartPost=/etc/mysql/debian-start-instance.sh guydb (code=exited, status=0/SUCCESS)
 >      Status: "Taking your SQL requests now..."

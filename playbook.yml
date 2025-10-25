@@ -7,4 +7,4 @@
   become: yes
   gather_facts: yes
   roles:
-    - ansibleguy.infra_mariadb
+    - oxlorg.mariadb

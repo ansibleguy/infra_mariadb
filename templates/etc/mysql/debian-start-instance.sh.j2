@@ -1,9 +1,9 @@
 #!/bin/bash
 # {{ ansible_managed }}
-# ansibleguy.infra_mariadb
+# oxlorg.mariadb
 
 # This script is executed by "/etc/init.d/mysql" on every (re)start.
-# Modified for multi-instance use in the ansible-role 'https://github.com/ansibleguy/infra_mariadb'
+# Modified for multi-instance use in the ansible-role 'https://github.com/O-X-L/ansible-role-mariadb'
 
 CONFIG_FILE="{{ MARIADB_CONFIG.config.path_config }}/client_${1}_startup-checks.cnf"
 

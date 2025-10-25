@@ -6,6 +6,6 @@ Check out the [Molecule Tutorial](https://github.com/ansibleguy/ansible_tutorial
 
 ```bash
 
-cd roles/ansibleguy.sw_nextcloud
+cd roles/oxlorg.nextcloud
 molecule test
 ```

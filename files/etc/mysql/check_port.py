@@ -1,7 +1,7 @@
 #!/usr/bin/python3
 
 # ansible managed
-# ansibleguy.infra_mariadb
+# oxlorg.mariadb
 
 from sys import argv as sys_argv
 from sys import exit as sys_exit

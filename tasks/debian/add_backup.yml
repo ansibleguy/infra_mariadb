@@ -58,7 +58,7 @@
 - name: "MariaDB | Add Instance '{{ name }}' | Backup | Configuring backup service"
   ansible.builtin.template:
     src: "templates/etc/systemd/system/backup-mariadb.{{ item }}.j2"
-    dest: "/etc/systemd/system/ansibleguy.infra_mariadb-backup-{{ name }}.{{ item }}"
+    dest: "/etc/systemd/system/oxlorg.mariadb-backup-{{ name }}.{{ item }}"
     mode: 0644
   loop:
     - 'service'
@@ -68,7 +68,7 @@
 - name: "MariaDB | Add Instance '{{ name }}' | Backup | Enabling/Starting backup timer"
   ansible.builtin.systemd:
     daemon_reload: yes
-    name: "ansibleguy.infra_mariadb-backup-{{ name }}.timer"
+    name: "oxlorg.mariadb-backup-{{ name }}.timer"
     enabled: yes
     state: started
   tags: [instances, backup]
